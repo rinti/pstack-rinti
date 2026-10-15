@@ -1,7 +1,5 @@
 # pstack
 
-[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-yellow?logo=buy-me-a-coffee&logoColor=white)](https://buymeacoffee.com/codenyer)
-
 Lauren Tan's [pstack](https://github.com/cursor/plugins/tree/main/pstack) is an opinionated Cursor skill stack that improves agent outcomes. This is a port for Claude Code, Codex, Pi, GitHub Copilot and other agent harnesses. It tracks upstream and also carries named policy forks, each declared in [`tools/forks.json`](tools/forks.json).
 
 This is pstack-rinti, a fork of Michael Denyer's [pstack-claude](https://github.com/michael-denyer/pstack-claude) at 0.9.84. It adds Codex seats to the arena (see [below](#codex-seats-in-the-arena)) and installs from its own `pstack-rinti` marketplace. The original copyright and license notices are kept in [LICENSE](LICENSE) and [NOTICE.md](NOTICE.md).
@@ -93,8 +91,6 @@ pstack has no server or telemetry. Anything its skills ask your agent to read, i
 ## Contributing
 
 Thanks for helping make this port better. Bug reports, documentation fixes, and runtime improvements are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for the checks and where your change belongs. Report vulnerabilities privately as described in [SECURITY.md](SECURITY.md).
-
-To support maintenance of this port, [buy the maintainer a coffee](https://buymeacoffee.com/codenyer).
 
 ## License
 
