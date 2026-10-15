@@ -2,6 +2,10 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.3 - Codex reviewers in interrogate
+
+A `codex:<model>` entry now also works in the `interrogate reviewers` line, as in `interrogate reviewers: opus, fable, codex:gpt-6.1-sol, codex:gpt-6-astra`. Each Codex reviewer runs read-only through `codex exec`, following the arena's Codex seats section, and `setup-pstack` offers Codex entries for the line.
+
 ## 0.1.2 - Codex seats in architect runners
 
 A `codex:<model>` entry now also works in the `architect runners` line, as in `architect runners: opus, fable, codex:gpt-6.1-sol, codex:gpt-6-astra`. The architect skill runs its design sketches through the arena, and the arena's Codex seats section now names the runner line that run reads, not only the two arena lines. `setup-pstack` offers Codex entries for `architect runners` too.

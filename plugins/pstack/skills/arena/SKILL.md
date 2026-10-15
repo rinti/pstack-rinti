@@ -58,7 +58,7 @@ On Claude Code, an entry of the form `codex:<model>` in the runner line this run
 codex exec -m <model> -C <output-location> -s workspace-write --skip-git-repo-check -o <seat>.last.md - < <seat>.prompt.md
 ```
 
-The exit notification marks the seat done, and `<seat>.last.md` holds its rationale or, for a judge, its verdict. A cross-judge seat uses `-s read-only` instead. An `@<level>` suffix adds `-c model_reasoning_effort=<level>`. If `codex` is not on `PATH`, run the seat on the single-role default in [Models](#models) and say so. A nonzero exit is a dropout.
+The exit notification marks the seat done, and `<seat>.last.md` holds its rationale or, for a judge, its verdict. A cross-judge seat, or any seat that only reads, uses `-s read-only` instead. An `@<level>` suffix adds `-c model_reasoning_effort=<level>`. If `codex` is not on `PATH`, run the seat on the single-role default in [Models](#models) and say so. A nonzero exit is a dropout.
 
 ## Models
 
