@@ -17,7 +17,7 @@ Every candidate gets the same prompt, so the prompt is the contract.
 
 1. State the artifact each candidate is producing.
 2. Derive the rubric, 3-6 concrete gradeable criteria for what success looks like on *this* task. It is the picker's tool in Phase D. Candidates only see the task.
-3. Pick the runners. Use the `arena runners` line in `pstack-models.md`. If the sheet or that line is missing, run one each on the defaults in [Models](#models). An `auto` or `inherit-parent` entry in this line or the cross-judge line means the parent model, so omit `model` for it. If the `Agent` tool rejects a configured entry, run that seat on its family's default and say so. Families go by model name, such as Opus, Fable, or Sonnet. With no family match, use the single-role default in [Models](#models). If it rejects a default, use the closest valid slug of the same family from its error message. Spawn more runners when the arena covers multiple design directions. Use the same model N times when the work is generation-bound rather than judgment-sensitive.
+3. Pick the runners. Use the `arena runners` line in `pstack-models.md`. If the sheet or that line is missing, run one each on the defaults in [Models](#models). An `auto` or `inherit-parent` entry in this line or the cross-judge line means the parent model, so omit `model` for it. On Claude Code, a `codex:<model>` entry runs through the Codex CLI per [Codex seats](#codex-seats). If the `Agent` tool rejects a configured entry, run that seat on its family's default and say so. Families go by model name, such as Opus, Fable, or Sonnet. With no family match, use the single-role default in [Models](#models). If it rejects a default, use the closest valid slug of the same family from its error message. Spawn more runners when the arena covers multiple design directions. Use the same model N times when the work is generation-bound rather than judgment-sensitive.
 4. Give each candidate its own output location (a git worktree where possible, otherwise `/tmp/arena-<slug>/candidate-<n>/`), per the **separate-before-serializing-shared-state** principle skill.
 
 ## Phase B: Fan out
@@ -49,6 +49,16 @@ Verify the synthesized artifact like any other output, per the **prove-it-works*
 ## Outputs
 
 One synthesized artifact, with a short synthesis note alongside naming the base and why, the cross-judge's verdict, each graft with its source candidate, what was rejected and why, any convergence or dropouts, and the verification result.
+
+## Codex seats
+
+On Claude Code, an entry of the form `codex:<model>` in either arena line runs that seat through the Codex CLI instead of the `Agent` tool, as in `arena runners: opus, fable, codex:gpt-6.1-sol, codex:gpt-6-astra`. Write the seat's prompt to `<seat>.prompt.md` beside its output location, then launch it with the Bash tool and `run_in_background: true`, in the same message as the `Agent` calls:
+
+```sh
+codex exec -m <model> -C <output-location> -s workspace-write --skip-git-repo-check -o <seat>.last.md - < <seat>.prompt.md
+```
+
+The exit notification marks the seat done, and `<seat>.last.md` holds its rationale or, for a judge, its verdict. A cross-judge seat uses `-s read-only` instead. An `@<level>` suffix adds `-c model_reasoning_effort=<level>`. If `codex` is not on `PATH`, run the seat on the single-role default in [Models](#models) and say so. A nonzero exit is a dropout.
 
 ## Models
 
