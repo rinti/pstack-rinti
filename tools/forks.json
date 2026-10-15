@@ -14,7 +14,7 @@
     },
     "plugins/pstack/skills/arena/SKILL.md": {
       "kind": "port-feature",
-      "why": "Lets a codex:<model> entry in the arena runners or cross-judge pool line run that seat through the Codex CLI from Claude Code.",
+      "why": "Lets a codex:<model> entry in the arena runners, architect runners, or arena cross-judge pool line run that seat through the Codex CLI from Claude Code.",
       "since": "0.1.0",
       "upstream": "not-proposed"
     },
@@ -236,7 +236,7 @@
     },
     "plugins/pstack/skills/setup-pstack/SKILL.md": {
       "kind": "port-feature",
-      "why": "Writes the override sheet at each runtime's own path, loaded by @-include on Claude Code and pasted into AGENTS.md on Codex since neither has Cursor's always-applied rules, replaces Cursor's budget step with a default effort and per-role effort levels, adds the SessionStart hook toggle and names the Pi extension as a reader of it, lists every runtime's sheet path in a table, routes GitHub Copilot to copilot.md, and offers and validates codex:<model> entries for the arena lines.",
+      "why": "Writes the override sheet at each runtime's own path, loaded by @-include on Claude Code and pasted into AGENTS.md on Codex since neither has Cursor's always-applied rules, replaces Cursor's budget step with a default effort and per-role effort levels, adds the SessionStart hook toggle and names the Pi extension as a reader of it, lists every runtime's sheet path in a table, routes GitHub Copilot to copilot.md, and offers and validates codex:<model> entries for the arena lines and architect runners.",
       "since": "0.9.2",
       "upstream": "not-proposed"
     },

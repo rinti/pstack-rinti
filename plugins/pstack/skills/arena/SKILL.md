@@ -52,7 +52,7 @@ One synthesized artifact, with a short synthesis note alongside naming the base 
 
 ## Codex seats
 
-On Claude Code, an entry of the form `codex:<model>` in either arena line runs that seat through the Codex CLI instead of the `Agent` tool, as in `arena runners: opus, fable, codex:gpt-6.1-sol, codex:gpt-6-astra`. Write the seat's prompt to `<seat>.prompt.md` beside its output location, then launch it with the Bash tool and `run_in_background: true`, in the same message as the `Agent` calls:
+On Claude Code, an entry of the form `codex:<model>` in the runner line this run reads (`arena runners`, or `architect runners` when the **architect** skill runs the arena) or in the `arena cross-judge pool` line runs that seat through the Codex CLI instead of the `Agent` tool, as in `arena runners: opus, fable, codex:gpt-6.1-sol, codex:gpt-6-astra`. Write the seat's prompt to `<seat>.prompt.md` beside its output location, then launch it with the Bash tool and `run_in_background: true`, in the same message as the `Agent` calls:
 
 ```sh
 codex exec -m <model> -C <output-location> -s workspace-write --skip-git-repo-check -o <seat>.last.md - < <seat>.prompt.md

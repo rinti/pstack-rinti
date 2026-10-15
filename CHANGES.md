@@ -2,6 +2,10 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.2 - Codex seats in architect runners
+
+A `codex:<model>` entry now also works in the `architect runners` line, as in `architect runners: opus, fable, codex:gpt-6.1-sol, codex:gpt-6-astra`. The architect skill runs its design sketches through the arena, and the arena's Codex seats section now names the runner line that run reads, not only the two arena lines. `setup-pstack` offers Codex entries for `architect runners` too.
+
 ## 0.1.1 - sync to upstream e5136d8 (v0.15.25): adds /sharpen and /in-your-own-words
 
 The upstream pin moves from `997ffc7` to `e5136d8`, upstream v0.15.25, 14 pstack commits. `/in-your-own-words` has the agent restate the user's goal and the problem before work starts, and `/sharpen` asks how a top expert would approach the task, what the user is really after, and whether the ask is over- or underspecified, then does the work. `/poteto-help` routes to both. `/ketchup` now reads like `/bro` in about 150 words and builds each action item on a real visual, and the autopilot loops catch the operator up through it. Upstream restated four principles as reasoning instead of rules: attack-the-premise, fix-root-causes, make-operations-idempotent, and test-behavior-not-implementation. The attack-the-premise and test-behavior texts now carry the checks the port had restored in 0.9.82, so those two files are no longer forks. `how` proposes a cheap always-on signal after a deep debugging dig, `poteto-agent` finds `poteto-mode` by its installed path, and the Codex `/` menu is documented. The package now carries 39 public skills and 24 principles.
