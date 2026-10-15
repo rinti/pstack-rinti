@@ -2,6 +2,8 @@
 
 This plugin is a port of upstream MIT-licensed work. The port's modifications and additions are (c) 2026 Michael Denyer and are also released under the [MIT license](LICENSE). All upstream copyright notices and license terms are preserved.
 
+pstack-rinti is a fork of [michael-denyer/pstack-claude](https://github.com/michael-denyer/pstack-claude), taken at release 0.9.84 (commit 94f5ce9). Its changes since then are recorded in [CHANGES.md](CHANGES.md) from 0.1.0 on and released under the same MIT license.
+
 ## Upstream sources
 
 | Component | Upstream | Copyright | License | License file |

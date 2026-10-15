@@ -15,7 +15,7 @@
     "plugins/pstack/skills/arena/SKILL.md": {
       "kind": "port-feature",
       "why": "Lets a codex:<model> entry in the arena runners or cross-judge pool line run that seat through the Codex CLI from Claude Code.",
-      "since": "0.9.85",
+      "since": "0.1.0",
       "upstream": "not-proposed"
     },
     "plugins/pstack/skills/blast-radius/SKILL.md": {

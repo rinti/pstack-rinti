@@ -2,6 +2,12 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.0 - pstack-rinti: Codex seats in the arena
+
+This fork of pstack-claude 0.9.84 installs from its own marketplace, `pstack-rinti`, with `/plugin marketplace add rinti/pstack-rinti` and `/plugin install pstack@pstack-rinti`. The plugin is still named `pstack`, so skills keep the `pstack:` prefix. The manifests name Andreas Bernacca as author and this repository as homepage. `LICENSE`, `NOTICE.md`, and the shipped notice keep every earlier copyright line and record the fork point.
+
+On Claude Code, an entry of the form `codex:<model>` in the `arena runners` or `arena cross-judge pool` line runs that seat through `codex exec` instead of the `Agent` tool. For example, `arena runners: opus, fable, codex:gpt-6.1-sol, codex:gpt-6-astra` runs two Claude and two Codex candidates. A runner writes into its own output location, a judge runs read-only, and an `@<level>` suffix sets `model_reasoning_effort`. Without `codex` on `PATH`, the seat runs on the single-role default. `setup-pstack` offers these entries and accepts one when a probe call exits 0.
+
 ## 0.9.84 - run the Codex SessionStart hook again
 
 0.9.83 shipped a root `plugins/pstack/plugin.json` in the Agent Plugins 1.0.0 format. Codex reads that manifest before `.codex-plugin/plugin.json` and loads no plugin hooks for an Agent Plugins manifest, so on Codex the `SessionStart` hook stopped running and sessions lost the pstack routing instruction. Skills still loaded, and Claude Code was not affected. The root manifest is gone, so Codex reads `.codex-plugin/plugin.json` and its hooks again. The generator now fails when `plugins/pstack/plugin.json` exists, and the sync still excludes upstream's copy. A packaging test follows Codex's manifest lookup over the shipped plugin and checks that it finds the `SessionStart` hook, and that the 0.9.83 manifest would hide it. @Dude-Bear found the cause and confirmed it by moving the file aside, in [#265](https://github.com/michael-denyer/pstack-claude/issues/265).

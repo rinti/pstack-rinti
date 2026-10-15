@@ -4,6 +4,8 @@
 
 Lauren Tan's [pstack](https://github.com/cursor/plugins/tree/main/pstack) is an opinionated Cursor skill stack that improves agent outcomes. This is a port for Claude Code, Codex, Pi, GitHub Copilot and other agent harnesses. It tracks upstream and also carries named policy forks, each declared in [`tools/forks.json`](tools/forks.json).
 
+This is pstack-rinti, a fork of Michael Denyer's [pstack-claude](https://github.com/michael-denyer/pstack-claude) at 0.9.84. It adds Codex seats to the arena (see [below](#codex-seats-in-the-arena)) and installs from its own `pstack-rinti` marketplace. The original copyright and license notices are kept in [LICENSE](LICENSE) and [NOTICE.md](NOTICE.md).
+
 Tell `poteto-mode` your goal and it will invoke the correct workflow for the task. It keeps your code concise, simple and verified.
 
 For concurrency bugs and invariants that tests cannot reach, see the separate [agent-formal-verify](https://github.com/michael-denyer/agent-formal-verify) plugin, which adds TLA+ model checking and Lean proofs.
@@ -15,8 +17,8 @@ For concurrency bugs and invariants that tests cannot reach, see the separate [a
 Run in Claude Code:
 
 ```text
-/plugin marketplace add michael-denyer/pstack-claude
-/plugin install pstack@pstack-claude
+/plugin marketplace add rinti/pstack-rinti
+/plugin install pstack@pstack-rinti
 ```
 
 ### Codex
@@ -24,8 +26,8 @@ Run in Claude Code:
 Run in your terminal:
 
 ```shell
-codex plugin marketplace add michael-denyer/pstack-claude
-codex plugin add pstack@pstack-claude
+codex plugin marketplace add rinti/pstack-rinti
+codex plugin add pstack@pstack-rinti
 ```
 
 ### Pi
@@ -33,7 +35,7 @@ codex plugin add pstack@pstack-claude
 Run in your terminal:
 
 ```shell
-pi install git:github.com/michael-denyer/pstack-claude
+pi install git:github.com/rinti/pstack-rinti
 ```
 
 The package loads the skills and the pstack Pi extension, which adds the subagent, question, and wake-up tools the skills use, plus `/loop` and the routing instruction. Invoke a skill with `/skill:<name>`.
@@ -43,8 +45,8 @@ The package loads the skills and the pstack Pi extension, which adds the subagen
 Run in your terminal:
 
 ```shell
-copilot plugin marketplace add michael-denyer/pstack-claude
-copilot plugin install pstack@pstack-claude
+copilot plugin marketplace add rinti/pstack-rinti
+copilot plugin install pstack@pstack-rinti
 ```
 
 This installs pstack for the Copilot CLI and the GitHub Copilot app, which share `~/.copilot`. Start a new session afterwards. Copilot ships no default pstack models, so the first skill that needs one runs `setup-pstack` to pick from the models your account lists, and later sessions reuse that choice.
@@ -52,6 +54,16 @@ This installs pstack for the Copilot CLI and the GitHub Copilot app, which share
 The Copilot build is tested on Copilot CLI 1.0.87 through 1.0.92. On those versions the routing hook's context reaches the session alongside other plugins' session-start context. If a later version keeps only one plugin's context, `setup-pstack` offers a [standing instruction](plugins/pstack/skills/setup-pstack/copilot.md#wire-it-in) for `~/.copilot/copilot-instructions.md` instead. On 1.0.92, once the CLI caches its computer-use experiment assignment, `copilot -p` sessions list no plugin skills and a `skill` call returns "Skill not found". Interactive sessions, the hooks, and the agents are unaffected.
 
 Run `setup-pstack` to change model defaults, set a reasoning effort per role (for example `arena runners: opus @xhigh, fable @max`, which Claude Code dispatches through the plugin's `pstack:effort-<level>` or `pstack:poteto-agent-<level>` agents; roles without a level keep the session's effort unless the sheet's `default effort` line names one), or turn automatic routing off. The plugin installs the routing hook on Claude Code, Codex, and GitHub Copilot; Codex asks you to trust it through `/hooks` before it runs. On Pi the extension injects the same routing instruction. In Claude Code and the Copilot CLI, use `/pstack:setup-pstack`.
+
+### Codex seats in the arena
+
+On Claude Code, the arena can run some of its candidates on Codex models through the Codex CLI. Opting in is one line in your `~/.claude/pstack-models.md`:
+
+```text
+arena runners: opus, fable, codex:gpt-6.1-sol, codex:gpt-6-astra
+```
+
+This runs GPT 6.1 Sol and GPT 6.0 Astra in place of Sonnet and Haiku. A `codex:<model>` entry also works in the `arena cross-judge pool` line, where the judge runs read-only, and an `@<level>` suffix sets Codex's reasoning effort. Each Codex seat needs `codex` on your `PATH`. Without it, the seat runs on Opus. See [Codex seats](plugins/pstack/skills/arena/SKILL.md#codex-seats).
 
 For Prime Agent, OpenCode, Gemini CLI, or skills-only installs for any harness, see [shared installation](docs/reference.md#shared-skills-installation).
 
