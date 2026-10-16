@@ -2,6 +2,19 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.4 - merge pstack-claude 0.9.86, sync to upstream f713f14 (v0.15.25)
+
+This release merges pstack-claude through `1dba27e`, its releases 0.9.85 and 0.9.86:
+
+- `304f4ac` Drop the signed C2PA manifest from the PNGs, release 0.9.85 (#271)
+- `1dba27e` Sync to upstream 99743e9 (v0.15.25), add /in-your-own-words and /sharpen, release 0.9.86 (#272)
+
+Users get pstack-claude's translation of upstream `99743e9`. The plugin icon and README overview no longer carry a signed C2PA manifest, and a test fails on any tracked PNG that has one. Orchestrate walks the PR base chain through `gh` without Graphite, keeps a stack pushed from the checkout's own fork, and leaves out pull requests from other repositories. The poteto-agent fallback reads `.claude-plugin/plugin.json` instead of Cursor's manifest path. `/ketchup` asks for charts rendered from the data instead of Cursor's `/visualize`.
+
+This fork had synced upstream `e5136d8` in 0.1.1 with its own translation. pstack-claude's pin `99743e9` is newer and its translation was reviewed, so every skill file it changed takes its text. The arena, interrogate, and setup-pstack Codex seats stay on top of that text. The arena and interrogate effort sentence now reads "reasoning level", as pstack-claude writes it. Where both sides had a substitution rule for the same phrase, pstack-claude's rule stays and this fork's goes: the effort paragraph and sentence, the refused `composer-*` fallback, the cloud-agent owner and verifier sentences, the orchestrate worker placement, nesting, and sub-coordinator rules, the `.cursor-plugin/plugin.json` path, and both `/visualize` rules. Two of this fork's rules have no counterpart and stay: the autopilot-full live-lane control skill sentence and the orchestrate coordinator's "Local." The `/in-your-own-words` and `/sharpen` rows in `docs/reference.md` take pstack-claude's wording. `principle-test-behavior-not-implementation` is a fork again, with pstack-claude's reason.
+
+The upstream pin then moves from `99743e9` to `f713f14`, still v0.15.25. None of those 5 upstream commits touch `pstack/`. Measured with `bun tools/sync.mjs pstack f713f14`: 84 unchanged, 48 forked, 37 excluded, nothing written or conflicted, and no file became port-only.
+
 ## 0.1.3 - Codex reviewers in interrogate
 
 A `codex:<model>` entry now also works in the `interrogate reviewers` line, as in `interrogate reviewers: opus, fable, codex:gpt-6.1-sol, codex:gpt-6-astra`. Each Codex reviewer runs read-only through `codex exec`, following the arena's Codex seats section, and `setup-pstack` offers Codex entries for the line.
