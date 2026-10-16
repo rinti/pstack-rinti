@@ -18,6 +18,7 @@ const UNIT_HEADER = "id\ttrack\tstate\tbranch\tpr\tsha\tbrief";
 const LEDGER_HEADER = "pr\tsha\tverdict\tevidence\tverifier\tts";
 const LOCK_FILE = ".orch.lock";
 const TAKEOVER_DIR = ".orch.lock.takeover";
+const FORGE_TIMEOUT_MS = 60_000;
 
 export type Verdict =
   | "live-ui-verified"
@@ -178,6 +179,8 @@ export interface AddStandingParams {
 
 export interface OpenStoreOptions {
   readonly force?: boolean;
+  readonly forgePaths?: Readonly<Partial<Record<Forge, string>>>;
+  readonly forgeTimeoutMs?: number;
   readonly onLockStolen?: (holder: string) => void;
   readonly onStaleLock?: (holder: string) => void;
 }
@@ -1069,6 +1072,12 @@ interface ForgePullRequestQuery {
   readonly stateField: string;
   readonly headField: string;
   readonly baseField: string;
+  // gh matches --head and --base by branch name alone, so the chain keeps only
+  // PRs whose head repository, read from this field as { nameWithOwner } or
+  // null for a deleted fork, is the one the checkout pushes to.
+  readonly headRepositoryField?: string;
+  // gh lists 30 pull requests unless told otherwise.
+  readonly listArgs: readonly string[];
   readonly states: ReadonlyMap<string, FrontierPrState>;
 }
 
@@ -1079,6 +1088,8 @@ const FORGE_PULL_REQUEST_QUERIES: Readonly<
     stateField: "state",
     headField: "headRefName",
     baseField: "baseRefName",
+    headRepositoryField: "headRepository",
+    listArgs: ["--limit", "1000"],
     states: new Map<string, FrontierPrState>([
       ["OPEN", "OPEN"],
       ["MERGED", "MERGED"],
@@ -1089,6 +1100,7 @@ const FORGE_PULL_REQUEST_QUERIES: Readonly<
     stateField: "status",
     headField: "headRef",
     baseField: "baseRef",
+    listArgs: [],
     states: new Map<string, FrontierPrState>([
       ["open", "OPEN"],
       ["draft", "OPEN"],
@@ -1105,28 +1117,65 @@ export function parseForge(value: string): Forge {
   throw new UserError("forge must be gh or origin");
 }
 
+// Bun resolves a command spawned without an env option against its startup
+// PATH, so tests point the store at a fake forge executable instead.
+interface ForgeExecutable {
+  readonly path: string;
+  readonly timeout: number;
+}
+
 interface ForgePullRequest {
   readonly pr: number;
   readonly state: FrontierPrState;
   readonly branch: string;
   readonly base: string;
+  // owner/name in lower case; null when the forge does not say or the head
+  // repository is gone.
+  readonly repository: string | null;
+}
+
+interface ForgePullRequests {
+  // PRs whose head is in the repository the checkout pushes to.
+  readonly local: readonly ForgePullRequest[];
+  readonly foreign: readonly ForgePullRequest[];
+}
+
+// Resolves to null when the forge reports no head repository or the repository
+// is gone, and to undefined when the field is malformed.
+function headRepository(
+  row: Record<string, unknown>,
+  field: string | undefined
+): string | null | undefined {
+  if (field === undefined) {
+    return null;
+  }
+  const value = row[field];
+  if (value === null) {
+    return null;
+  }
+  return isRecord(value) && typeof value.nameWithOwner === "string"
+    ? value.nameWithOwner.toLowerCase()
+    : undefined;
 }
 
 function runTool({
   command,
   args,
   repo,
+  executable,
 }: {
   command: string;
   args: readonly string[];
   repo: string;
+  executable?: ForgeExecutable;
 }): string {
   try {
-    return execFileSync(command, args, {
+    return execFileSync(executable?.path ?? command, args, {
       cwd: repo,
       encoding: "utf8",
-      env: process.env,
       stdio: ["ignore", "pipe", "pipe"],
+      timeout: executable?.timeout,
+      killSignal: "SIGKILL",
     });
   } catch (error) {
     throw new UserError(
@@ -1139,13 +1188,17 @@ function listPullRequests({
   filter,
   branch,
   forge,
+  executable,
   repo,
+  localRepository,
 }: {
   filter: "--head" | "--base";
   branch: string;
   forge: Forge;
+  executable: ForgeExecutable;
   repo: string;
-}): readonly ForgePullRequest[] {
+  localRepository: string | null;
+}): ForgePullRequests {
   const query = FORGE_PULL_REQUEST_QUERIES[forge];
   const command = `${forge} pr list ${filter} ${branch}`;
   // Every state is fetched because a merged or closed PR still anchors the
@@ -1159,12 +1212,18 @@ function listPullRequests({
       branch,
       "--state",
       "all",
+      ...query.listArgs,
       "--json",
-      ["number", query.stateField, query.headField, query.baseField].join(
-        ","
-      ),
+      [
+        "number",
+        query.stateField,
+        query.headField,
+        query.baseField,
+        ...(query.headRepositoryField ? [query.headRepositoryField] : []),
+      ].join(","),
     ],
     repo,
+    executable,
   });
   let value: unknown;
   try {
@@ -1175,12 +1234,15 @@ function listPullRequests({
   if (!isUnknownArray(value)) {
     throw new UserError(`${command} output is not a JSON array`);
   }
-  return value.map((row) => {
+  const rows = value.map((row): ForgePullRequest => {
     const status = isRecord(row) ? row[query.stateField] : undefined;
     const state =
       typeof status === "string" ? (query.states.get(status) ?? null) : null;
     const head = isRecord(row) ? row[query.headField] : undefined;
     const base = isRecord(row) ? row[query.baseField] : undefined;
+    const repository = isRecord(row)
+      ? headRepository(row, query.headRepositoryField)
+      : undefined;
     if (
       !isRecord(row) ||
       typeof row.number !== "number" ||
@@ -1190,33 +1252,60 @@ function listPullRequests({
       typeof head !== "string" ||
       head.length === 0 ||
       typeof base !== "string" ||
-      base.length === 0
+      base.length === 0 ||
+      repository === undefined
     ) {
       throw new UserError(`${command} output has an invalid PR row`);
     }
-    return { pr: row.number, state, branch: head, base };
+    return { pr: row.number, state, branch: head, base, repository };
   });
+  const isLocal = (row: ForgePullRequest): boolean =>
+    localRepository === null || row.repository === localRepository;
+  return {
+    local: rows.filter(isLocal),
+    foreign: rows.filter((row) => !isLocal(row)),
+  };
 }
 
 function branchPullRequest({
   branch,
   forge,
+  executable,
   repo,
+  localRepository,
 }: {
   branch: string;
   forge: Forge;
+  executable: ForgeExecutable;
   repo: string;
+  localRepository: string | null;
 }): ForgePullRequest {
-  const rows = listPullRequests({ filter: "--head", branch, forge, repo });
-  const row = rows[0];
+  const { local, foreign } = listPullRequests({
+    filter: "--head",
+    branch,
+    forge,
+    executable,
+    repo,
+    localRepository,
+  });
+  const row = local[0];
   if (row === undefined) {
+    const ignored =
+      foreign.length === 0 || localRepository === null
+        ? ""
+        : ` from ${localRepository} (ignored ${foreign
+            .map(
+              (item) =>
+                `#${item.pr} from ${item.repository ?? "a deleted repository"}`
+            )
+            .join(", ")})`;
     throw new UserError(
-      `branch ${branch} has no pull request; open one with ${forge} pr create, or resolve the frontier from a branch whose chain is fully submitted`
+      `branch ${branch} has no pull request${ignored}; open one with ${forge} pr create, or resolve the frontier from a branch whose chain is fully submitted`
     );
   }
-  if (rows.length > 1) {
+  if (local.length > 1) {
     throw new UserError(
-      `branch ${branch} has multiple pull requests (${rows.map((item) => `#${item.pr}`).join(", ")}); close the stale ones first`
+      `branch ${branch} has multiple pull requests (${local.map((item) => `#${item.pr}`).join(", ")}); close the stale ones first`
     );
   }
   return row;
@@ -1225,15 +1314,24 @@ function branchPullRequest({
 function openChildren({
   branch,
   forge,
+  executable,
   repo,
+  localRepository,
 }: {
   branch: string;
   forge: Forge;
+  executable: ForgeExecutable;
   repo: string;
+  localRepository: string | null;
 }): readonly ForgePullRequest[] {
-  return listPullRequests({ filter: "--base", branch, forge, repo }).filter(
-    (row) => row.state === "OPEN"
-  );
+  return listPullRequests({
+    filter: "--base",
+    branch,
+    forge,
+    executable,
+    repo,
+    localRepository,
+  }).local.filter((row) => row.state === "OPEN");
 }
 
 function runGit({
@@ -1253,7 +1351,6 @@ function branchSha({
   branch: string;
   repo: string;
 }): string {
-  // The exact ref keeps a same-named tag or a remote branch from answering.
   const sha = runGit({
     args: ["rev-parse", "--verify", `refs/heads/${branch}^{commit}`],
     repo,
@@ -1265,11 +1362,49 @@ function branchSha({
 }
 
 function currentBranch(repo: string): string {
-  // --short would answer heads/<branch> while a same-named tag exists.
+  // --short prints heads/<branch> for a branch that shares a tag's name.
   return runGit({ args: ["symbolic-ref", "HEAD"], repo }).replace(
     /^refs\/heads\//,
     ""
   );
+}
+
+// The repository the branch pushes to, as owner/name in lower case, from the
+// remote git itself would push it to.
+function pushRepository({
+  branch,
+  repo,
+}: {
+  branch: string;
+  repo: string;
+}): string {
+  const configured = (key: string): string | null => {
+    try {
+      return runGit({ args: ["config", "--get", key], repo }) || null;
+    } catch {
+      return null;
+    }
+  };
+  const remote =
+    configured(`branch.${branch}.pushRemote`) ??
+    configured("remote.pushDefault") ??
+    configured(`branch.${branch}.remote`) ??
+    "origin";
+  let url: string;
+  try {
+    url = runGit({ args: ["remote", "get-url", "--push", remote], repo });
+  } catch {
+    throw new UserError(
+      `branch ${branch} has no push remote (remote ${remote} has no URL), so the chain cannot tell which pull requests are the checkout's own`
+    );
+  }
+  const match = /([^/:]+)\/([^/]+?)(?:\.git)?\/?$/.exec(url);
+  const owner = match?.[1];
+  const name = match?.[2];
+  if (owner === undefined || name === undefined) {
+    throw new UserError(`remote ${remote} URL ${url} does not name a repository`);
+  }
+  return `${owner}/${name}`.toLowerCase();
 }
 
 function trunkBranch(repo: string): string {
@@ -1284,14 +1419,32 @@ function trunkBranch(repo: string): string {
   }
 }
 
-function resolveFrontier(repo: string, forge: Forge): readonly FrontierPr[] {
+function resolveFrontier({
+  repo,
+  forge,
+  executable,
+}: {
+  repo: string;
+  forge: Forge;
+  executable: ForgeExecutable;
+}): readonly FrontierPr[] {
   const trunk = trunkBranch(repo);
   const current = currentBranch(repo);
   if (current === trunk) {
     return [];
   }
+  const localRepository =
+    FORGE_PULL_REQUEST_QUERIES[forge].headRepositoryField === undefined
+      ? null
+      : pushRepository({ branch: current, repo });
   const seen = new Set([current]);
-  let bottom = branchPullRequest({ branch: current, forge, repo });
+  let bottom = branchPullRequest({
+    branch: current,
+    forge,
+    executable,
+    repo,
+    localRepository,
+  });
   const chain = [bottom];
   while (bottom.base !== trunk) {
     if (seen.has(bottom.base)) {
@@ -1300,12 +1453,24 @@ function resolveFrontier(repo: string, forge: Forge): readonly FrontierPr[] {
       );
     }
     seen.add(bottom.base);
-    bottom = branchPullRequest({ branch: bottom.base, forge, repo });
+    bottom = branchPullRequest({
+      branch: bottom.base,
+      forge,
+      executable,
+      repo,
+      localRepository,
+    });
     chain.unshift(bottom);
   }
   let tip = current;
   for (;;) {
-    const children = openChildren({ branch: tip, forge, repo });
+    const children = openChildren({
+      branch: tip,
+      forge,
+      executable,
+      repo,
+      localRepository,
+    });
     const child = children[0];
     if (child === undefined) {
       break;
@@ -1665,7 +1830,14 @@ export function openStore(
           throw new UserError("--prs must not contain duplicates");
         }
         const old = await readFrontier(store);
-        const prs = resolveFrontier(repo, forge);
+        const prs = resolveFrontier({
+          repo,
+          forge,
+          executable: {
+            path: options.forgePaths?.[forge] ?? forge,
+            timeout: options.forgeTimeoutMs ?? FORGE_TIMEOUT_MS,
+          },
+        });
         if (pin !== undefined) {
           validateFrontierPin({
             actual: prs.map((row) => row.pr),

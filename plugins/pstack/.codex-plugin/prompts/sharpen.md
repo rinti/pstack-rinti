@@ -1,6 +1,6 @@
 ---
 name: sharpen
-description: sharpen a task before starting with the expert approach, what you are really after, and the right level of specification
+description: aim a task at what you are really after, the way a top expert would, without overspecifying it
 disable-model-invocation: true
 ---
 

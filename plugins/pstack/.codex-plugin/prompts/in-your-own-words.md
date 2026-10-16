@@ -1,6 +1,6 @@
 ---
 name: in-your-own-words
-description: have the agent restate your goal and the problem before it starts
+description: play back your goal and the problem before the agent starts
 disable-model-invocation: true
 ---
 

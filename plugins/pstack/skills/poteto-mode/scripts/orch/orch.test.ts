@@ -5,7 +5,6 @@ import {
   mkdtemp,
   readFile,
   readdir,
-  rename,
   rm,
   symlink,
   writeFile,
@@ -53,7 +52,12 @@ async function initializedStore(): Promise<{
   readonly store: Store;
 }> {
   const directory = await makeDirectory();
-  const store = useStore(directory);
+  const store = useStore(directory, {
+    forgePaths: {
+      gh: join(directory, "bin", "gh"),
+      origin: join(directory, "bin", "origin"),
+    },
+  });
   await store.init();
   return { directory, store };
 }
@@ -86,6 +90,10 @@ async function makeGitStack(directory: string): Promise<{
   git({ repo, args: ["init", "--initial-branch=main"] });
   git({ repo, args: ["config", "user.name", "Orch Test"] });
   git({ repo, args: ["config", "user.email", "orch@example.com"] });
+  git({
+    repo,
+    args: ["remote", "add", "origin", `https://github.com/${FIXTURE_REPOSITORY}.git`],
+  });
   await writeFile(join(repo, "main.txt"), "main\n");
   git({ repo, args: ["add", "."] });
   git({ repo, args: ["commit", "-m", "main"] });
@@ -115,31 +123,48 @@ async function makeGitStack(directory: string): Promise<{
 
 type FixtureState = "open" | "draft" | "merged" | "closed";
 
+const FIXTURE_REPOSITORY = "acme/widgets";
+
+interface FixturePr {
+  readonly number: number;
+  readonly state: FixtureState;
+  readonly head: string;
+  readonly base: string;
+  // The head repository as owner/name. Undefined takes the fixture's default
+  // and null stands for a fork that has since been deleted.
+  readonly repository?: string | null;
+}
+
 const FORGE_FIXTURES: Readonly<
   Record<
     Forge,
     {
       readonly fields: string;
-      readonly row: (pr: {
-        number: number;
-        state: FixtureState;
-        head: string;
-        base: string;
-      }) => Record<string, unknown>;
+      readonly listArgs: readonly string[];
+      readonly row: (
+        pr: FixturePr,
+        repository: string
+      ) => Record<string, unknown>;
     }
   >
 > = {
   gh: {
-    fields: "number,state,headRefName,baseRefName",
-    row: ({ number, state, head, base }) => ({
+    fields: "number,state,headRefName,baseRefName,headRepository",
+    listArgs: ["--limit", "1000"],
+    row: ({ number, state, head, base, repository }, fallback) => ({
       number,
       state: state === "draft" ? "OPEN" : state.toUpperCase(),
       headRefName: head,
       baseRefName: base,
+      headRepository:
+        repository === null
+          ? null
+          : { nameWithOwner: repository ?? fallback },
     }),
   },
   origin: {
     fields: "number,status,headRef,baseRef",
+    listArgs: [],
     row: ({ number, state, head, base }) => ({
       number,
       status: state,
@@ -151,14 +176,12 @@ const FORGE_FIXTURES: Readonly<
 
 function forgeRows(
   forge: Forge,
-  prs: readonly {
-    number: number;
-    state: FixtureState;
-    head: string;
-    base: string;
-  }[]
+  prs: readonly FixturePr[],
+  repository = FIXTURE_REPOSITORY
 ): string {
-  return JSON.stringify(prs.map((pr) => FORGE_FIXTURES[forge].row(pr)));
+  return JSON.stringify(
+    prs.map((pr) => FORGE_FIXTURES[forge].row(pr, repository))
+  );
 }
 
 async function withFakeForge<T>({
@@ -166,11 +189,13 @@ async function withFakeForge<T>({
   forge,
   operation,
   currentRows,
+  repository = FIXTURE_REPOSITORY,
 }: {
   directory: string;
   forge: Forge;
   operation: () => Promise<T>;
   currentRows?: string;
+  repository?: string;
 }): Promise<T> {
   const bin = join(directory, "bin");
   const outputPath = join(directory, "forge-output.txt");
@@ -179,19 +204,33 @@ async function withFakeForge<T>({
     outputPath,
     `${
       currentRows ??
-      forgeRows(forge, [
-        {
-          number: 11,
-          state: "open",
-          head: "stack/open",
-          base: "stack/closed",
-        },
-      ])
+      forgeRows(
+        forge,
+        [
+          {
+            number: 11,
+            state: "open",
+            head: "stack/open",
+            base: "stack/closed",
+          },
+        ],
+        repository
+      )
     }\n`
   );
-  const { fields } = FORGE_FIXTURES[forge];
+  const { fields, listArgs } = FORGE_FIXTURES[forge];
   const list = (filter: string, branch: string): string =>
-    `pr list ${filter} ${branch} --state all --json ${fields}`;
+    [
+      "pr",
+      "list",
+      filter,
+      branch,
+      "--state",
+      "all",
+      ...listArgs,
+      "--json",
+      fields,
+    ].join(" ");
   const fake = join(bin, forge);
   await writeFile(
     fake,
@@ -206,21 +245,25 @@ case "$*" in
     cat "${outputPath}"
     ;;
   "${list("--head", "stack/closed")}")
-    printf '%s\\n' '${forgeRows(forge, [{ number: 13, state: "closed", head: "stack/closed", base: "stack/merged" }])}'
+    printf '%s\\n' '${forgeRows(forge, [{ number: 13, state: "closed", head: "stack/closed", base: "stack/merged" }], repository)}'
     ;;
   "${list("--head", "stack/merged")}")
-    printf '%s\\n' '${forgeRows(forge, [{ number: 10, state: "merged", head: "stack/merged", base: "main" }])}'
+    printf '%s\\n' '${forgeRows(forge, [{ number: 10, state: "merged", head: "stack/merged", base: "main" }], repository)}'
     ;;
   "${list("--base", "stack/open")}")
-    printf '%s\\n' '${forgeRows(forge, [
-      { number: 14, state: "draft", head: "stack/draft", base: "stack/open" },
-      {
-        number: 15,
-        state: "closed",
-        head: "stack/abandoned",
-        base: "stack/open",
-      },
-    ])}'
+    printf '%s\\n' '${forgeRows(
+      forge,
+      [
+        { number: 14, state: "draft", head: "stack/draft", base: "stack/open" },
+        {
+          number: 15,
+          state: "closed",
+          head: "stack/abandoned",
+          base: "stack/open",
+        },
+      ],
+      repository
+    )}'
     ;;
   "${list("--base", "stack/draft")}")
     printf '[]\\n'
@@ -233,18 +276,7 @@ esac
 `
   );
   await chmod(fake, 0o755);
-
-  const originalPath = process.env.PATH;
-  process.env.PATH = `${bin}:${originalPath ?? ""}`;
-  try {
-    return await operation();
-  } finally {
-    if (originalPath === undefined) {
-      delete process.env.PATH;
-    } else {
-      process.env.PATH = originalPath;
-    }
-  }
+  return operation();
 }
 
 function runCli(
@@ -1079,50 +1111,123 @@ promises.readFile = async (path, ...rest) => {
     });
   }
 
-  it("pins a branch head when a same-named tag points to another commit", async () => {
+  it("leaves pull requests whose head is in another repository out of the gh chain", async () => {
     const { directory, store } = await initializedStore();
     const stack = await makeGitStack(directory);
-    git({
-      repo: stack.repo,
-      args: ["tag", "stack/open", stack.mergedSha],
-    });
 
     await withFakeForge({
       directory,
       forge: "gh",
+      currentRows: forgeRows("gh", [
+        { number: 11, state: "open", head: "stack/open", base: "stack/closed" },
+        {
+          number: 99,
+          state: "open",
+          head: "stack/open",
+          base: "main",
+          repository: "mallory/widgets",
+        },
+        {
+          number: 98,
+          state: "closed",
+          head: "stack/open",
+          base: "main",
+          repository: null,
+        },
+      ]),
       operation: async () => {
-        const frontier = await store.frontier.set({ repo: stack.repo });
-        expect(frontier.prs).toContainEqual({
-          pr: 11,
-          branches: "stack/open",
-          sha: stack.openSha,
-          state: "OPEN",
-        });
-        expect(await store.frontier.show()).toEqual(frontier);
+        const { prs } = await store.frontier.set({ repo: stack.repo });
+        expect(prs.map((row) => row.pr)).toEqual([10, 13, 11, 14]);
       },
     });
   });
 
-  it("rejects a tag without its branch and preserves the saved frontier", async () => {
+  it("names the pull requests it left out when a chain branch has only those", async () => {
     const { directory, store } = await initializedStore();
     const stack = await makeGitStack(directory);
 
     await withFakeForge({
       directory,
       forge: "gh",
+      currentRows: forgeRows("gh", [
+        {
+          number: 99,
+          state: "open",
+          head: "stack/open",
+          base: "main",
+          repository: "mallory/widgets",
+        },
+        {
+          number: 98,
+          state: "closed",
+          head: "stack/open",
+          base: "main",
+          repository: null,
+        },
+      ]),
       operation: async () => {
-        const before = await store.frontier.set({ repo: stack.repo });
-        git({
-          repo: stack.repo,
-          args: ["tag", "stack/closed", stack.closedSha],
-        });
-        git({ repo: stack.repo, args: ["branch", "-D", "stack/closed"] });
+        await expect(store.frontier.set({ repo: stack.repo })).rejects.toThrow(
+          "branch stack/open has no pull request from acme/widgets (ignored #99 from mallory/widgets, #98 from a deleted repository); open one with gh pr create"
+        );
+      },
+    });
+  });
 
-        await expect(
-          store.frontier.set({ repo: stack.repo })
-        ).rejects.toThrow("git rev-parse");
-        expect(await store.frontier.show()).toEqual(before);
-        expect(before.generation).toBe(1);
+  it("keeps a stack pushed from a fork by matching the remote the branch pushes to", async () => {
+    const { directory, store } = await initializedStore();
+    const stack = await makeGitStack(directory);
+    git({
+      repo: stack.repo,
+      args: ["remote", "add", "fork", "git@github.com:Me/Widgets.git"],
+    });
+    git({ repo: stack.repo, args: ["config", "remote.pushDefault", "origin"] });
+    git({
+      repo: stack.repo,
+      args: ["config", "branch.stack/open.pushRemote", "fork"],
+    });
+
+    await withFakeForge({
+      directory,
+      forge: "gh",
+      repository: "me/widgets",
+      currentRows: forgeRows(
+        "gh",
+        [
+          {
+            number: 11,
+            state: "open",
+            head: "stack/open",
+            base: "stack/closed",
+          },
+          {
+            number: 97,
+            state: "open",
+            head: "stack/open",
+            base: "main",
+            repository: FIXTURE_REPOSITORY,
+          },
+        ],
+        "me/widgets"
+      ),
+      operation: async () => {
+        const { prs } = await store.frontier.set({ repo: stack.repo });
+        expect(prs.map((row) => row.pr)).toEqual([10, 13, 11, 14]);
+      },
+    });
+  });
+
+  it("rejects a gh chain from a checkout whose branch has no push remote", async () => {
+    const { directory, store } = await initializedStore();
+    const stack = await makeGitStack(directory);
+    git({ repo: stack.repo, args: ["remote", "remove", "origin"] });
+
+    await withFakeForge({
+      directory,
+      forge: "gh",
+      operation: async () => {
+        await expect(store.frontier.set({ repo: stack.repo })).rejects.toThrow(
+          "branch stack/open has no push remote (remote origin has no URL)"
+        );
       },
     });
   });
@@ -1139,6 +1244,54 @@ promises.readFile = async (path, ...rest) => {
         await expect(store.frontier.set({ repo: stack.repo })).rejects.toThrow(
           "branch stack/open has no pull request; open one with gh pr create"
         );
+      },
+    });
+  });
+
+  it("pins a branch head when a same-named tag points to another commit", async () => {
+    const { directory, store } = await initializedStore();
+    const stack = await makeGitStack(directory);
+    git({
+      repo: stack.repo,
+      args: ["tag", "stack/open", stack.mergedSha],
+    });
+
+    await withFakeForge({
+      directory,
+      forge: "gh",
+      operation: async () => {
+        const frontier = await store.frontier.set({ repo: stack.repo });
+        expect(frontier.prs.map((row) => [row.branches, row.sha])).toEqual([
+          ["stack/merged", stack.mergedSha],
+          ["stack/closed", stack.closedSha],
+          ["stack/open", stack.openSha],
+          ["stack/draft", stack.draftSha],
+        ]);
+        expect(await store.frontier.show()).toEqual(frontier);
+      },
+    });
+  });
+
+  it("rejects a tag without its branch and preserves the saved frontier", async () => {
+    const { directory, store } = await initializedStore();
+    const stack = await makeGitStack(directory);
+
+    await withFakeForge({
+      directory,
+      forge: "gh",
+      operation: async () => {
+        const before = await store.frontier.set({ repo: stack.repo });
+        git({
+          repo: stack.repo,
+          args: ["tag", "stack/merged", stack.mergedSha],
+        });
+        git({ repo: stack.repo, args: ["branch", "-D", "stack/merged"] });
+
+        await expect(
+          store.frontier.set({ repo: stack.repo })
+        ).rejects.toThrow("git rev-parse");
+        expect(await store.frontier.show()).toEqual(before);
+        expect(before.generation).toBe(1);
       },
     });
   });
@@ -1375,4 +1528,38 @@ describe("port guards", () => {
     await store.units.set({ id: "'foo", state: "done" });
     expect(await store.units.list()).toMatchObject(units);
   });
+
+  it.each([
+    ["gh pr list --head stack/open", ""],
+    [
+      "gh pr list --base stack/open",
+      `if [ "$3" = --head ]; then printf '%s\\n' '[{"number":11,"state":"OPEN","headRefName":"stack/open","baseRefName":"main","headRepository":{"nameWithOwner":"${FIXTURE_REPOSITORY}"}}]'; exit 0; fi\n`,
+    ],
+  ])(
+    "fails a frontier set when %s hangs and ignores SIGTERM",
+    async (call, answerHead) => {
+      const directory = await makeDirectory();
+      const fake = join(directory, "bin", "gh");
+      // On a saturated machine one start of the fake forge has taken over a
+      // second, and the head query before a hung base query must fit the budget.
+      const store = useStore(directory, {
+        forgePaths: { gh: fake },
+        forgeTimeoutMs: 2000,
+      });
+      await store.init();
+      const stack = await makeGitStack(directory);
+      await mkdir(join(directory, "bin"));
+      await writeFile(
+        fake,
+        `#!/usr/bin/env bash\n${answerHead}trap '' TERM\nexec sleep 20\n`,
+        { mode: 0o755 }
+      );
+      const started = Date.now();
+      await expect(store.frontier.set({ repo: stack.repo })).rejects.toThrow(
+        new RegExp(`^${call} --state all .* failed: .*ETIMEDOUT`)
+      );
+      expect(Date.now() - started).toBeLessThan(10_000);
+    },
+    30_000
+  );
 });
