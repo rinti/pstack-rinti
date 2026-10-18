@@ -63,7 +63,21 @@ arena runners: opus, fable, codex:gpt-6.1-sol, codex:gpt-6-astra
 
 This runs GPT 6.1 Sol and GPT 6.0 Astra in place of Sonnet and Haiku. A `codex:<model>` entry also works in the `arena cross-judge pool` line, where the judge runs read-only, and an `@<level>` suffix sets Codex's reasoning effort. Each Codex seat needs `codex` on your `PATH`. Without it, the seat runs on Opus. See [Codex seats](plugins/pstack/skills/arena/SKILL.md#codex-seats).
 
-For Prime Agent, OpenCode, Gemini CLI, or skills-only installs for any harness, see [shared installation](docs/reference.md#shared-skills-installation).
+### Other harnesses
+
+OpenCode (the CLI and the desktop app), Gemini CLI, Prime Agent, and skills-only Codex installs read skills from `~/.agents/skills/`. Run in your terminal:
+
+```shell
+git clone https://github.com/rinti/pstack-rinti
+cd pstack-rinti
+mkdir -p ~/.agents/skills
+for s in plugins/pstack/skills/*/; do
+  target=~/.agents/skills/"$(basename "$s")"
+  test -e "$target" || test -L "$target" || ln -s "$(pwd)/$s" "$target"
+done
+```
+
+To update, run `git pull` in the clone, then run the `for` loop again to link skills added since the last run. These installs have no routing hook, so ask for `poteto-mode` by name or add a standing instruction to the harness's instruction file. See [shared installation](docs/reference.md#shared-skills-installation) for per-harness notes and uninstalling.
 
 ## Getting started
 
