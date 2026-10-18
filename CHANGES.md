@@ -2,6 +2,23 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.6 - merge pstack-claude 0.9.93, sync to upstream 0b8e952 (v0.15.26)
+
+This release merges pstack-claude through `046341e`, its release 0.9.93:
+
+- `025bc64` Build the gh head repository from its owner login and name (#288)
+- `046341e` Release 0.9.93: orch reads gh head repositories on gh before 2.80 (#289)
+
+Users get orchestrate's PR chain on `gh` releases before 2.80, which have no `nameWithOwner` on `headRepository`: orch now asks for `headRepositoryOwner` and builds the owner and name itself. Both commits are taken whole. The only conflicts were the release numbers: every manifest keeps this fork's `0.1.x` version, and `CHANGES.md` leaves out the `0.9.93` heading, which this entry summarizes.
+
+The upstream pin then moves from `101b274` to `0b8e952`, v0.15.26. Users get:
+
+- `/create-formal-verification-skill`, new in `4382e68`. It picks the property where a bug costs the most and tests reach the least, verifies it with a fitting tool such as TLA+ or an SMT-backed verifier, shows the check failing on a broken variant, and leaves a project-local skill that reruns it. It gets a row in the `docs/reference.md` slash-command table, a Codex prompt stub, a `/poteto-help` row from upstream, and a `NOTICE.md` row.
+- `/ketchup` lists every item waiting on the user with its link, what it changes, the evidence, the risk, and a pick, so each call can be made from the reply alone, and it no longer cuts items to stay under a word count (`16541c6`, `bc14437`).
+- `typescript-best-practices` makes a brand with a verifying type guard instead of `as` (`0317eb8`).
+
+Upstream renamed the `poteto-mode` skill from `Poteto Mode` to its folder name (`a968159`), which the port already did. Its other commits change only `README.md`, `docs/`, the Cursor harness tree, and the version bump, which the port excludes. Measured with `bun tools/sync.mjs pstack 0b8e952`: 80 unchanged, 48 forked and untouched, `poteto-help` merged cleanly with its port changes, 38 excluded, nothing conflicted, and no substitution rule or `tools/forks.json` change was needed.
+
 ## 0.1.5 - merge pstack-claude 0.9.92, sync to upstream 101b274 (v0.15.25)
 
 This release merges pstack-claude through `7bad1eb`, its releases 0.9.87 to 0.9.92:
