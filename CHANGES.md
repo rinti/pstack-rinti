@@ -2,6 +2,26 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.5 - merge pstack-claude 0.9.92, sync to upstream 101b274 (v0.15.25)
+
+This release merges pstack-claude through `7bad1eb`, its releases 0.9.87 to 0.9.92:
+
+- `9155ea0` Put the shared skills install in the README and correct its update step (#275)
+- `1ea7319` Hold worktrees with ignored user files or reflog-only commits, release 0.9.87 (#277)
+- `963781d` Run feature and refactoring delegates on a Sonnet worker tier, release 0.9.88 (#278)
+- `1439b97` Name each Pi agent's transcript in list_agents and its notice, release 0.9.89 (#281)
+- `5bd4529` Show what a running Pi agent is doing: activity in list_agents, a footer line, and /pstack-agents, release 0.9.90 (#282)
+- `140bbd5` Calibrate comparison tools with known-bad controls, release 0.9.91 (#280)
+- `b65b68c` Keep Pi worktree output when status.showUntrackedFiles hides it (#284)
+- `6ae5d25` Quote transcript paths in the /pstack-agents read command (#285)
+- `7bad1eb` Release 0.9.92: Pi keeps hidden worktree output and quotes transcript paths (#287)
+
+Users get the worktree audit's two new holds: `hold-ignored` for an ignored file outside the build and cache directories, such as `.env`, and `hold-reflog` for a commit only the worktree's HEAD reflog reaches, so neither is called safe to remove. Feature and refactoring delegates move to a new `worker` tier, `sonnet`, and `bug-fix`, `perf-issue`, and `hillclimb` default to `opus`. A line in `pstack-models.md` still overrides any role. `principle-prove-it-works` checks the real state and exit code before a success report, and `principle-build-the-lever` requires known-bad controls for each comparison output. On Pi, `list_agents` names each agent's transcript and current activity, a footer line shows the running agents, the new `/pstack-agents` command shows how to read each one, and an agent's worktree is no longer removed as clean when `status.showUntrackedFiles=no` hides its files.
+
+All nine commits are taken whole. The conflicts were the release numbers and the README. Every manifest keeps this fork's `0.1.x` version, and `CHANGES.md` leaves out the `0.9.x` headings, which this entry summarizes. The README keeps the Codex seats section and takes pstack-claude's new "Other harnesses" install steps, with the clone pointing at `rinti/pstack-rinti` so a skills-only install gets this fork's Codex seats. The arena, interrogate, and setup-pstack Codex seats were not touched by the merge.
+
+The upstream pin then moves from `f713f14` to `101b274`, still v0.15.25. Its one pstack commit, `182f2ce`, changes only `README.md` and `docs/`, which the port excludes. Measured with `bun tools/sync.mjs pstack 101b274`: 83 unchanged, 49 forked, 38 excluded, nothing written or conflicted, and no file became port-only.
+
 ## 0.1.4 - merge pstack-claude 0.9.86, sync to upstream f713f14 (v0.15.25)
 
 This release merges pstack-claude through `1dba27e`, its releases 0.9.85 and 0.9.86:
