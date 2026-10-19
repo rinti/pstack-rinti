@@ -2,6 +2,19 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.7 - merge pstack-claude 0.9.94, sync to upstream d457567 (v0.15.28)
+
+This release merges pstack-claude through `49b6850`, its release 0.9.94:
+
+- `3cff27a` Collapse each install section and lead the setup note with routing (#290)
+- `49b6850` Sync to upstream 7b353f7 (v0.15.27): add formal verification skills, release 0.9.94 (#291)
+
+Users get `/maintain-formal-verification-skill`, new upstream in `7b353f7`. It finds the commits that touched the code a formal verification covers since its last confirmed commit, updates the model, harness, or properties, reruns, and says whether each failure is drift in the verification or a bug in the code. `/create-formal-verification-skill` now defaults to TLA+ for ordering bugs, tests the real code with generated inputs when no verifier runs on the language, records the files it covers and the commit it was last confirmed against, and names its skill for the area, never `verify` or `verify-*`, so it cannot be mistaken for the project `verify` skill that `/create-verification-skill` writes. `/setup-pstack` gains a step 10 that offers a formal verification skill once, and `/poteto-help`, the Codex, Pi, and Copilot mappings, `/ketchup`, `/sharpen`, and `typescript-best-practices` carry upstream's wording updates. The README collapses each install section and leads its setup note with routing.
+
+Both commits are taken whole. pstack-claude's pin, `7b353f7`, is newer than this fork's `0b8e952`, so the skill text, the Codex prompt stub, the `/poteto-help` row, the `NOTICE.md` row, and the slash-command table for `/create-formal-verification-skill` take pstack-claude's translation over the one 0.1.6 wrote. Every manifest keeps this fork's `0.1.x` version, and `CHANGES.md` leaves out the `0.9.94` heading, which this entry summarizes. The README keeps the Codex seats section, now under Configure since the install sections are collapsed. The `setup-pstack` fork entry keeps both reasons: pstack-claude's step 9 and 10 numbering and this fork's `codex:<model>` offers. The arena, interrogate, and setup-pstack Codex seats were not touched by the merge.
+
+The upstream pin then moves from `7b353f7` to `d457567`, v0.15.28. Its one pstack commit changes only the plugin manifests and `docs/`, which the port excludes. Measured with `bun tools/sync.mjs pstack d457567`: 85 unchanged, 49 forked and untouched, 38 excluded, nothing written or conflicted, and no substitution rule or `tools/forks.json` change was needed.
+
 ## 0.1.6 - merge pstack-claude 0.9.93, sync to upstream 0b8e952 (v0.15.26)
 
 This release merges pstack-claude through `046341e`, its release 0.9.93:
