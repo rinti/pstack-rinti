@@ -2,6 +2,18 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.8 - merge pstack-claude 0.9.95, sync to upstream a66a893 (v0.15.29)
+
+This release merges pstack-claude through `88f6d39`, its release 0.9.95:
+
+- `88f6d39` Pass reasoning effort as the Agent call's effort field, drop the effort agents, release 0.9.95 (#294)
+
+Users get reasoning effort per role without the generated effort agents. An `@level` in the override sheet now reaches the subagent as the dispatch's own effort field: `effort` on the Claude Code `Agent` call, `reasoning_effort` on Codex and Copilot, and `effort` on Pi's `agent` tool. The ten `effort-<level>` and `poteto-agent-<level>` agents and the `agents` list in the Claude Code plugin manifest are gone, so pstack's agent types are the four under `agents/`. `@level` needs Claude Code 2.1.292 or later. Existing override sheets keep working, since the `@level` syntax is unchanged; only the sheet's header sentence that `/setup-pstack` writes now says the subagent runs at that level instead of naming an effort agent.
+
+The commit is taken whole. The only conflicts were the release numbers: every manifest keeps this fork's `0.1.x` version, and `CHANGES.md` leaves out the `0.9.95` heading, which this entry summarizes. Keeping this fork's side of the Claude Code `plugin.json` conflict would have kept the old `agents` list, so the list was removed by hand to match pstack-claude. The arena, interrogate, and setup-pstack Codex seats merged cleanly; a Codex seat's `@<level>` still becomes `-c model_reasoning_effort=<level>` on the Codex CLI.
+
+The upstream pin then moves from `d457567` to `a66a893`, v0.15.29. Its one pstack commit, `88d4751`, restores `/sharpen` to its original prompt: it asks what a top professional would add, the rawest material and the methods they would use, and an outside check, then rewrites the prompt and returns it without doing the task. `/poteto-help` and its recipes describe `/sharpen` that way, and the slash-command table in `docs/reference.md`, which also sets the Codex prompt's description, now does too. Measured with `bun tools/sync.mjs pstack a66a893`: two files updated, one merged, 48 forked and untouched, nothing conflicted, and no substitution rule or `tools/forks.json` change was needed.
+
 ## 0.1.7 - merge pstack-claude 0.9.94, sync to upstream d457567 (v0.15.28)
 
 This release merges pstack-claude through `49b6850`, its release 0.9.94:
