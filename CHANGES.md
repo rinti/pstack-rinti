@@ -2,6 +2,21 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.10 - merge pstack-claude 0.9.100, upstream stays at 190d287 (v0.15.29)
+
+This release merges pstack-claude through `1ecb936`, its releases 0.9.97 to 0.9.100:
+
+- `a369e70` Pass the hooks directory to awk through the environment, release 0.9.97 (#297)
+- `867f2fe` Read Claude Code transcripts under CLAUDE_CONFIG_DIR, release 0.9.98 (#298)
+- `ecc6fcf` Read Claude Code skills and plugins under CLAUDE_CONFIG_DIR, describe the transcript directory encoding, release 0.9.99 (#300)
+- `1ecb936` Print the transcripts directory with a script, honour CLAUDE_CODE_PLUGIN_CACHE_DIR, release 0.9.100 (#301)
+
+Users on a machine with `CLAUDE_CONFIG_DIR` set get working transcript, skill, and plugin lookups. `recall`, `reflect`, `automate-me`, `show-me-your-work`, `poteto-agent`, and the Eval, Session pickup, and Worktree cleanup playbooks name `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/` paths in place of `~/.claude/`, and plugin paths also honour `CLAUDE_CODE_PLUGIN_CACHE_DIR`. A new `skills/reflect/scripts/claude-project-dir.mjs` prints Claude Code's transcripts directory for the session's start directory, so the agent no longer builds `<encoded-cwd>` by hand. The Copilot and Muse SessionStart hooks now load from a plugin root that holds a backslash, where before they exited 0 without the mandate.
+
+All four commits are taken whole. The only conflicts were the release numbers: every manifest keeps this fork's `0.1.x` version, and `CHANGES.md` leaves out the `0.9.97` to `0.9.100` headings, which this entry summarizes. pstack-claude's skill text changes come from its `tools/substitutions.json` rules, which merged cleanly next to this fork's rules, and its pin (`7b353f7`) is older than this fork's, so `tools/upstream.json` keeps `190d287`. Its one `tools/forks.json` change rewrites the `reflect` fork reason to name `claude-project-dir.mjs`. The arena, interrogate, and setup-pstack Codex seats are untouched.
+
+The upstream pin already equals the newest `cursor/plugins` commit, `190d287`, so this run syncs nothing from upstream. Measured with `bun tools/sync.mjs pstack 190d287 --dry-run` after the merge: 85 unchanged, 49 forked and untouched, 38 excluded, nothing written or conflicted. No substitution rule or `tools/forks.json` change of this fork's was needed.
+
 ## 0.1.9 - merge pstack-claude 0.9.96, sync to upstream 190d287 (v0.15.29)
 
 This release merges pstack-claude through `d56fdb0`, its release 0.9.96:
