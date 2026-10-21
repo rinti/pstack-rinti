@@ -2,6 +2,18 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.9 - merge pstack-claude 0.9.96, sync to upstream 190d287 (v0.15.29)
+
+This release merges pstack-claude through `d56fdb0`, its release 0.9.96:
+
+- `d56fdb0` Add Muse native plugin port, release 0.9.96 (#295)
+
+Users get a Muse build. A native plugin manifest under `.muse-plugin/` lists every shared skill and a `SessionStart` hook that injects the poteto-mode mandate in Muse wording once `muse plugins approve pstack` approves the plugin's hooks. Muse lists each user-invocable skill as a slash command itself, so the build ships no command templates. A role's `@level` passes as `effort` on a Muse Workflow child. A new `muse-tools.md` mapping resolves tool names, subagents, transcripts, and Muse model IDs, `models.json` gains a `muse` block, and `/setup-pstack` writes the Muse sheet to `${XDG_CONFIG_HOME:-~/.config}/muse/pstack-models.md`, which the hook reads directly. The hook keeps each usable sheet line through the same `sheet_problems()` check the Copilot hooks use.
+
+The commit is taken whole. The conflicts were the release numbers, the README intro, and the `setup-pstack` fork reason. Every manifest keeps this fork's `0.1.x` version, and `CHANGES.md` leaves out the `0.9.96` heading, which this entry summarizes. The README intro keeps this fork's text without pstack-claude's donation badge and adds Muse to the runtime list. The README's Muse install clones `rinti/pstack-rinti` instead of `michael-denyer/pstack-claude`, so it installs this fork like the other install sections. The `setup-pstack` fork reason keeps both sides: pstack-claude's Muse sheet path and this fork's `codex:<model>` offers. The arena, interrogate, and setup-pstack Codex seats merged cleanly next to the new Muse notes.
+
+The upstream pin then moves from `a66a893` to `190d287`, still v0.15.29. Upstream's commits in that range touch only other plugins and no file under `pstack/`. Measured with `bun tools/sync.mjs pstack 190d287`: 85 unchanged, 49 forked and untouched, 38 excluded, nothing written or conflicted, and no substitution rule or `tools/forks.json` change was needed. The upstream pin in `docs/reference.md` now names `190d287`.
+
 ## 0.1.8 - merge pstack-claude 0.9.95, sync to upstream a66a893 (v0.15.29)
 
 This release merges pstack-claude through `88f6d39`, its release 0.9.95:
@@ -12,7 +24,7 @@ Users get reasoning effort per role without the generated effort agents. An `@le
 
 The commit is taken whole. The only conflicts were the release numbers: every manifest keeps this fork's `0.1.x` version, and `CHANGES.md` leaves out the `0.9.95` heading, which this entry summarizes. Keeping this fork's side of the Claude Code `plugin.json` conflict would have kept the old `agents` list, so the list was removed by hand to match pstack-claude. The arena, interrogate, and setup-pstack Codex seats merged cleanly; a Codex seat's `@<level>` still becomes `-c model_reasoning_effort=<level>` on the Codex CLI.
 
-The upstream pin then moves from `d457567` to `a66a893`, v0.15.29. Its one pstack commit, `88d4751`, restores `/sharpen` to its original prompt: it asks what a top professional would add, the rawest material and the methods they would use, and an outside check, then rewrites the prompt and returns it without doing the task. `/poteto-help` and its recipes describe `/sharpen` that way, and the slash-command table in `docs/reference.md`, which also sets the Codex prompt's description, now does too. Measured with `bun tools/sync.mjs pstack a66a893`: two files updated, one merged, 48 forked and untouched, nothing conflicted, and no substitution rule or `tools/forks.json` change was needed.
+The upstream pin then moves from `d457567` to `a66a893`, v0.15.29. Its one pstack commit, `88d4751`, restores `/sharpen` to its original prompt: it asks what a top professional would add, the rawest material and the methods they would use, and an outside check, then rewrites the prompt and returns it without doing the task. `/poteto-help` and its recipes describe `/sharpen` that way, and the slash-command table in `docs/reference.md`, which also sets the Codex prompt's description, now does too. Measured with `bun tools/sync.mjs pstack a66a893`: two files updated, one merged, 48 forked and untouched, nothing conflicted, and no substitution rule or `tools/forks.json` change was needed. The upstream pin in `docs/reference.md` now names `190d287`.
 
 ## 0.1.7 - merge pstack-claude 0.9.94, sync to upstream d457567 (v0.15.28)
 
@@ -25,7 +37,7 @@ Users get `/maintain-formal-verification-skill`, new upstream in `7b353f7`. It f
 
 Both commits are taken whole. pstack-claude's pin, `7b353f7`, is newer than this fork's `0b8e952`, so the skill text, the Codex prompt stub, the `/poteto-help` row, the `NOTICE.md` row, and the slash-command table for `/create-formal-verification-skill` take pstack-claude's translation over the one 0.1.6 wrote. Every manifest keeps this fork's `0.1.x` version, and `CHANGES.md` leaves out the `0.9.94` heading, which this entry summarizes. The README keeps the Codex seats section, now under Configure since the install sections are collapsed. The `setup-pstack` fork entry keeps both reasons: pstack-claude's step 9 and 10 numbering and this fork's `codex:<model>` offers. The arena, interrogate, and setup-pstack Codex seats were not touched by the merge.
 
-The upstream pin then moves from `7b353f7` to `d457567`, v0.15.28. Its one pstack commit changes only the plugin manifests and `docs/`, which the port excludes. Measured with `bun tools/sync.mjs pstack d457567`: 85 unchanged, 49 forked and untouched, 38 excluded, nothing written or conflicted, and no substitution rule or `tools/forks.json` change was needed.
+The upstream pin then moves from `7b353f7` to `d457567`, v0.15.28. Its one pstack commit changes only the plugin manifests and `docs/`, which the port excludes. Measured with `bun tools/sync.mjs pstack d457567`: 85 unchanged, 49 forked and untouched, 38 excluded, nothing written or conflicted, and no substitution rule or `tools/forks.json` change was needed. The upstream pin in `docs/reference.md` now names `190d287`.
 
 ## 0.1.6 - merge pstack-claude 0.9.93, sync to upstream 0b8e952 (v0.15.26)
 
@@ -42,7 +54,7 @@ The upstream pin then moves from `101b274` to `0b8e952`, v0.15.26. Users get:
 - `/ketchup` lists every item waiting on the user with its link, what it changes, the evidence, the risk, and a pick, so each call can be made from the reply alone, and it no longer cuts items to stay under a word count (`16541c6`, `bc14437`).
 - `typescript-best-practices` makes a brand with a verifying type guard instead of `as` (`0317eb8`).
 
-Upstream renamed the `poteto-mode` skill from `Poteto Mode` to its folder name (`a968159`), which the port already did. Its other commits change only `README.md`, `docs/`, the Cursor harness tree, and the version bump, which the port excludes. Measured with `bun tools/sync.mjs pstack 0b8e952`: 80 unchanged, 48 forked and untouched, `poteto-help` merged cleanly with its port changes, 38 excluded, nothing conflicted, and no substitution rule or `tools/forks.json` change was needed.
+Upstream renamed the `poteto-mode` skill from `Poteto Mode` to its folder name (`a968159`), which the port already did. Its other commits change only `README.md`, `docs/`, the Cursor harness tree, and the version bump, which the port excludes. Measured with `bun tools/sync.mjs pstack 0b8e952`: 80 unchanged, 48 forked and untouched, `poteto-help` merged cleanly with its port changes, 38 excluded, nothing conflicted, and no substitution rule or `tools/forks.json` change was needed. The upstream pin in `docs/reference.md` now names `190d287`.
 
 ## 0.1.5 - merge pstack-claude 0.9.92, sync to upstream 101b274 (v0.15.25)
 
