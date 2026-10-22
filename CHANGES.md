@@ -2,6 +2,19 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.12 - sync to upstream 4ec7ffa (v0.15.30): statechart fixes
+
+pstack-claude has nothing new since `903e738`, so this release merges nothing from it.
+
+The upstream pin moves from `eb4db2b` to `4ec7ffa`, still v0.15.30. Its two pstack commits touch only `/statechart`:
+
+- `7698375` fix(pstack): bring the statechart skill up to date with six fixes (#776)
+- `4ec7ffa` refactor(pstack): delete statechart comments that repeat the code, and rename helpers (#779)
+
+Users get a statechart skill that fails loudly where it used to give wrong output. The label map now stops when it reads a variable that the `--fixed` or `--against` model lacks, and new `--config`, `--fixed-config`, and `--against-config` flags keep the agreed spec from being checked with the code model's config. A rule the agreed config does not check is marked "not checked". TLC checks each rule with one worker per CPU and rechecks a broken rule with one worker for the shortest paths, and each `PROPERTY` in the config gets its own run. With `--against`, each story says whether the agreed spec already lists the bug, and the command lists each action condition that no `\* file:line` comment cites. Work survives a TLC exception after a broken rule and a filesystem that cannot rename into the output folder. `SKILL.md` asks for those citations, says that a replay drives only entry points a user or client reaches, and asks the hand-off to say whether the spec lists each bug.
+
+Measured with `bun tools/sync.mjs pstack 4ec7ffa`: 92 unchanged, 5 updated (`statechart/SKILL.md` and four scripts), 49 forked and untouched, 38 excluded, nothing conflicted. No substitution rule or `tools/forks.json` change was needed, and the arena, interrogate, and setup-pstack Codex seats are untouched. The upstream pin in `docs/reference.md` now names `4ec7ffa`.
+
 ## 0.1.11 - merge pstack-claude 0.9.101, sync to upstream eb4db2b (v0.15.30)
 
 This release merges pstack-claude through `903e738`, its release 0.9.101:
