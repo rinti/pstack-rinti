@@ -26,6 +26,7 @@ pstack-rinti is a fork of [michael-denyer/pstack-claude](https://github.com/mich
 | `plugins/pstack/skills/ketchup/` (v0.15.21 addition) | [cursor/plugins/pstack @ 997ffc7](https://github.com/cursor/plugins/tree/997ffc7/pstack) | (c) 2026 Lauren Tan | MIT | [LICENSE](LICENSE) |
 | `plugins/pstack/skills/in-your-own-words/`, `plugins/pstack/skills/sharpen/` (v0.15.22 and v0.15.24 additions) | [cursor/plugins/pstack @ 99743e9](https://github.com/cursor/plugins/tree/99743e9/pstack) | (c) 2026 Lauren Tan | MIT | [LICENSE](LICENSE) |
 | `plugins/pstack/skills/create-formal-verification-skill/`, `plugins/pstack/skills/maintain-formal-verification-skill/` (v0.15.26 and post-v0.15.27 additions) | [cursor/plugins/pstack @ 7b353f7](https://github.com/cursor/plugins/tree/7b353f7/pstack) | (c) 2026 Lauren Tan | MIT | [LICENSE](LICENSE) |
+| `plugins/pstack/skills/statechart/` (v0.15.30 addition) | [cursor/plugins/pstack @ eb4db2b](https://github.com/cursor/plugins/tree/eb4db2b/pstack) | (c) 2026 Lauren Tan | MIT | [LICENSE](LICENSE) |
 
 ## What changed in the port
 

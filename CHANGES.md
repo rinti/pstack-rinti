@@ -2,6 +2,18 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.11 - merge pstack-claude 0.9.101, sync to upstream eb4db2b (v0.15.30)
+
+This release merges pstack-claude through `903e738`, its release 0.9.101:
+
+- `903e738` Find the transcripts directory by CLAUDE_CODE_SESSION_ID, release 0.9.101 (#303)
+
+Users get a transcripts lookup that survives a `cd`. `claude-project-dir.mjs` now finds this session's transcripts directory from `CLAUDE_CODE_SESSION_ID`, so `recall`, `automate-me`, `reflect`, `show-me-your-work`, and the Eval and Session pickup playbooks no longer exit 1 or read another project's chats after the agent moves into a worktree or another project. The skills run the script without an argument.
+
+The commit is taken whole. The only conflicts were the release numbers: every manifest keeps this fork's `0.1.x` version, and `CHANGES.md` leaves out the `0.9.101` heading, which this entry summarizes. Its two `tools/substitutions.json` changes, which drop the `"<primary working directory>"` argument from the transcripts rules, merged cleanly next to this fork's rules. Its pin (`7b353f7`) is older than this fork's, so `tools/upstream.json` kept `190d287` until the sync below. The arena, interrogate, and setup-pstack Codex seats are untouched.
+
+The upstream pin then moves from `190d287` to `eb4db2b`, v0.15.30. Its one pstack commit adds `/statechart`. The skill draws what an app's user sees as a Mermaid statechart generated from a TLA+ model. States are gray when they work, red when still wrong, and green when an open fix fixes them, and each bug TLC finds is a numbered path. It also turns a chart the PM agrees to into a TLA+ skeleton, and audits code against an existing spec. Its scripts need Java 11 or later and `tla2tools.jar` to run TLC, and `--png` renders through `npx @mermaid-js/mermaid-cli`. The skill gets a row in the `docs/reference.md` slash-command table, which also writes its Codex prompt stub, a `/poteto-help` row from upstream, and a `NOTICE.md` row, and like every public skill in the port it is model-invocable. Measured with `bun tools/sync.mjs pstack eb4db2b`: 85 unchanged, 13 added, `poteto-help` merged cleanly with its port changes, 48 forked and untouched, 38 excluded, nothing conflicted, and no substitution rule or `tools/forks.json` change was needed. The upstream pin and skill counts in `docs/reference.md` now name `eb4db2b` and 66 skill directories.
+
 ## 0.1.10 - merge pstack-claude 0.9.100, upstream stays at 190d287 (v0.15.29)
 
 This release merges pstack-claude through `1ecb936`, its releases 0.9.97 to 0.9.100:
