@@ -2,6 +2,26 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.13 - merge pstack-claude 0.9.102, sync to upstream 8b3326d (v0.15.30)
+
+This release merges pstack-claude through `356c6e0`, its release 0.9.102:
+
+- `4ebb588` Preserve angle-bracket destinations in skill link validation (#304)
+- `356c6e0` Keep angle-bracket destinations in the skill link validator, release 0.9.102 (#307)
+
+Users get no change in skill text. Contributors get a skill link validator that reads a Markdown link written as `[text](<path with spaces.md>)` as the path inside the brackets, so `tools/validate-skills.mjs` no longer reports a link to an existing file as broken. `tests/agent-skills.test.mjs` covers the case.
+
+Both commits are taken whole. The only conflicts were the release numbers: every manifest keeps this fork's `0.1.x` version, and `CHANGES.md` leaves out the `0.9.102` heading, which this entry summarizes. pstack-claude's pin (`7b353f7`) is older than this fork's, so `tools/upstream.json` kept `4ec7ffa` until the sync below. The arena, interrogate, and setup-pstack Codex seats are untouched.
+
+The upstream pin then moves from `4ec7ffa` to `8b3326d`, still v0.15.30. Its four commits touch only the Vanta and Stable plugins, not pstack, cursor-team-kit, or thermos:
+
+- `b951b8e` Vanta: one server with a region variable instead of three regional servers
+- `86cee77` Add Stable third-party MCP plugin
+- `9b93e81` Merge pull request #778 from rosskrasner/cursor/stable-plugin
+- `8b3326d` Merge pull request #768 from cursor/djiang/vanta-region-picker
+
+Measured with `bun tools/sync.mjs pstack 8b3326d`: 97 unchanged, 49 forked and untouched, 38 excluded, nothing written or conflicted. No substitution rule or `tools/forks.json` change was needed. The upstream pin in `docs/reference.md` now names `8b3326d`.
+
 ## 0.1.12 - sync to upstream 4ec7ffa (v0.15.30): statechart fixes
 
 pstack-claude has nothing new since `903e738`, so this release merges nothing from it.
