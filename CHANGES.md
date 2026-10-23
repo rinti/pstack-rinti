@@ -2,6 +2,10 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.14 - name tautological tests and make the agent watch them go red
+
+The `principle-test-behavior-not-implementation` skill used to judge each test against an imagined edit that breaks the behavior. For every test the agent writes or changes, it now makes that edit once, runs the test, and watches it go red before undoing the edit. A test that stays green is called tautological and gets rewritten or deleted. The principle's summary in `poteto-mode`, which every session loads, names tautological tests too, so the word links the summary, the principle, and a user's own instructions that use it.
+
 ## 0.1.13 - merge pstack-claude 0.9.102, sync to upstream 8b3326d (v0.15.30)
 
 This release merges pstack-claude through `356c6e0`, its release 0.9.102:

@@ -50,7 +50,7 @@
     },
     "plugins/pstack/skills/poteto-mode/SKILL.md": {
       "kind": "policy",
-      "why": "Adds the Claude Code, Codex, Pi, GitHub Copilot, and Muse Platform Adaptation section with its task-tool and todo.md fallback (per task slug when sessions share a checkout), the run-or-verify driver line, the deploy-platform and defect-severity triggers, the port's principle summaries, the project playbooks paragraph, and the closed-review-gate rule that the Codex and Pi mappings point to, and it points the Agent-call defaults at the Models section with full tool access and the namespaced pstack:poteto-agent name, requires stopping an abandoned agent before replacing it, renders every reply item as prose, layers technical-writing on top of unslop, and describes Autopilot-full as stopping at merge-ready for the operator's click.",
+      "why": "Adds the Claude Code, Codex, Pi, GitHub Copilot, and Muse Platform Adaptation section with its task-tool and todo.md fallback (per task slug when sessions share a checkout), the run-or-verify driver line, the deploy-platform and defect-severity triggers, the port's principle summaries, the project playbooks paragraph, and the closed-review-gate rule that the Codex and Pi mappings point to, and it points the Agent-call defaults at the Models section with full tool access and the namespaced pstack:poteto-agent name, requires stopping an abandoned agent before replacing it, renders every reply item as prose, layers technical-writing on top of unslop, and describes Autopilot-full as stopping at merge-ready for the operator's click, and, for pstack-rinti, names tautological tests in the Test Behavior, Not Implementation summary.",
       "since": "0.9.2",
       "upstream": "not-proposed"
     },
@@ -236,7 +236,7 @@
     },
     "plugins/pstack/skills/principle-test-behavior-not-implementation/SKILL.md": {
       "kind": "policy",
-      "why": "Counts a constant pin as behavior when the value is a promise to users, such as a documented default.",
+      "why": "Counts a constant pin as behavior when the value is a promise to users, such as a documented default. For pstack-rinti, it names a test that stays green under the break-the-behavior edit tautological and requires making that edit once per written or changed test and watching the test go red.",
       "since": "0.9.82",
       "upstream": "not-proposed"
     },
