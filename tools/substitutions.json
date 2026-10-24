@@ -218,9 +218,16 @@
       "rationale": "Claude Code has no cloud concurrency limit"
     },
     {
-      "pattern": "`environment: \"cloud\"`, `run_in_background: true`, and the step 4 model, left unset for `auto` or `inherit-parent`. Use `environment: \"local\"` only when the worker needs access to something on the user's computer.",
-      "replacement": "`run_in_background: true`, and the step 4 model, left unset for `auto` or `inherit-parent`. Claude Code subagents all run on this machine, so isolation comes from the worktree or output directory assigned in Phase A, not from a remote environment.",
-      "rationale": "the Agent tool has no environment parameter"
+      "pattern": "`environment: \"cloud\"`, `run_in_background: true`, and the step ",
+      "files": "^skills/swarm/SKILL\\.md$",
+      "replacement": "`run_in_background: true`, and the step ",
+      "rationale": "the Agent tool has no environment parameter; split from the sentence's tail so the step number upstream renumbers stays out of the pattern"
+    },
+    {
+      "pattern": " model, left unset for `auto` or `inherit-parent`. Use `environment: \"local\"` only when the worker needs access to something on the user's computer.",
+      "files": "^skills/swarm/SKILL\\.md$",
+      "replacement": " model, left unset for `auto` or `inherit-parent`. Claude Code subagents all run on this machine, so isolation comes from the worktree or output directory assigned in Phase A, not from a remote environment.",
+      "rationale": "the Agent tool has no environment parameter, so the swarm's isolation is the per-worker worktree or output from Phase A"
     },
     {
       "pattern": "When a worker must start from a non-default pushed branch, pass `cloud_base_branch`.",

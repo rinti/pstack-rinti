@@ -2,6 +2,42 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.15 - sync to upstream 9580c23 (v0.15.32): ketchup-video, statechart renderer, watch-pr and orch fixes
+
+Users get the new `/ketchup-video` skill, which catches you up like `/ketchup` but shows what happened as a short silent slide video, with the waiting calls as text under it. The statechart skill picks up upstream's rewrite with the Pele renderer and its new scripts. Generated formal verification skills now tell the next agent to read each TLA+ result with `/statechart`. `/reflect` never edits a skill in the plugin cache. It copies the skill to `.claude/skills/` or `~/.claude/skills/` first and edits the copy. `/swarm` numbers its Phase A steps 1 to 4 again, and orch picks a branch's one open pull request over closed or merged ones left behind by stack surgery. pstack-claude has nothing new since 0.9.102, so this release merges none of Michael's commits.
+
+The upstream pin moves from `8b3326d` (v0.15.30) to `9580c23` (v0.15.32). These are the pstack commits in that range:
+
+- `076f4b2` feat(pstack): bring the statechart skill up to date, with the Pele renderer (#791)
+- `642289e` chore(pstack): bump to 0.15.31 (#792)
+- `00d5dec` feat(pstack): tell generated verify skills to read each model-check result with /statechart (#794)
+- `3c0fdb4` feat(pstack): add the ketchup-video skill (#797)
+- `b1a1298` chore(pstack): bump to 0.15.32 (#798)
+- `7054003` fix(pstack): route reflect edits out of the plugin cache (#800)
+- `96dec8e` fix(watch-pr): distinguish fork heads during stack discovery (#801)
+- `fe096ef` fix(watch-pr): cap polling sleeps at the deadline (#802)
+- `86c2448` fix(pstack): recognize matching inline code delimiters (#803)
+- `3c596e7` fix(orch): prefer active PR over branch history (#804)
+- `f83fbe6` fix(pstack): read transcript mtimes with GNU stat and date in worktree-audit (#805)
+- `a0b0ad9` docs(pstack): note Claude Code auto-update is off for third-party marketplaces (#806)
+- `e73df47` fix(pstack): renumber swarm's Phase A and fix its dangling table reference (#807)
+
+`bun tools/sync.mjs pstack 9580c23` updated 9 files, added 19, deleted the 3 `statechart/scripts/model/OutputFolder` files, merged 5 cleanly, and left 6 conflicts in the forked `watch-pr` and `orch` scripts. `f83fbe6` changes `worktree-audit.sh`, which this port excludes in favour of its own `worktree-audit.mjs`, and `a0b0ad9` touches upstream's README, which is excluded too.
+
+The swarm Phase B rule in `tools/substitutions.json` matched the whole sentence, step number included, so upstream's renumbering from step 4 to step 3 let `environment: "cloud"` through to the denylist. The rule is now two rules scoped to `swarm/SKILL.md`, one before and one after the step number, so the next renumbering needs no change. The replacement text is the same.
+
+How each conflict was settled:
+
+- `orch/store.ts`: upstream's open-PR preference now filters the port's own-repository rows (`local`), so a fork's PR with the same branch name still never counts. Nothing dropped.
+- `watch-pr/types.ts` and `watch-pr/github.ts`: the port keeps `headRepository`, and upstream's `isCrossRepository` flag is dropped (by this sync). The port already orders a stack only through branches in the PR's own repository and skips a fork head's children, which is what `96dec8e` adds. A clean-merged line that read `isCrossRepository` into each open PR was removed too.
+- `watch-pr/policy.ts`: the port's version is kept, and upstream's `sleep` helper is dropped (by this sync). The port's shared `WatchDeadline` already caps the retry and poll sleeps at the time left, which is what `fe096ef` adds.
+- `watch-pr/github.test.ts`: the port's tests stay. Upstream's four fork-head tests are rewritten against `headRepository` and the port's `orderStack(context, defaultBranch, open)`. The gh fixture test now expects the `headRepository,headRepositoryOwner` fields and a deleted fork read as `null`.
+- `watch-pr/policy.test.ts`: the port's tests stay, and upstream's deadline-sleep tests are added with a `WatchDeadline` dependency.
+
+Each ported test was run against code with its behaviour removed and went red: the fork-head child skip, the own-repository parent filter, the requested gh fields, the poll and retry sleep caps, and the open-PR preference.
+
+`tools/forks.json` rewrites the `why` of `watch-pr/types.ts`, `watch-pr/github.test.ts`, and `watch-pr/policy.test.ts` to name what this sync kept or ported. No entry was added or deleted. `docs/reference.md` gains the `/ketchup-video` row, counts 67 skill directories and 43 public skills, and names the new pin.
+
 ## 0.1.14 - name tautological tests and make the agent watch them go red
 
 The `principle-test-behavior-not-implementation` skill used to judge each test against an imagined edit that breaks the behavior. For every test the agent writes or changes, it now makes that edit once, runs the test, and watches it go red before undoing the edit. A test that stays green is called tautological and gets rewritten or deleted. The principle's summary in `poteto-mode`, which every session loads, names tautological tests too, so the word links the summary, the principle, and a user's own instructions that use it.
