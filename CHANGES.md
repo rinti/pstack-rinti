@@ -2,6 +2,19 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.16 - sync to upstream 99b609a (v0.15.32): pin only
+
+Users get no change to any skill. pstack-claude has nothing new since 0.9.102, so this release merges none of Michael's commits.
+
+The upstream pin moves from `9580c23` to `99b609a`, still v0.15.32. The range has no pstack commits. Its four commits touch only `third_party/tailscale`, which no component of this port carries, and the cursor/plugins marketplace listing and README for it:
+
+- `59c03a6` tailscale: cover the company tailnet setup, internal names, routed destinations, any port and private CAs in the setup skill (1.0.2)
+- `0b20c5e` tailscale: one-click personal Connect, several company tailnets, Premium posture note and no client on the bot computer in the setup skill (1.0.3)
+- `a29ce40` tailscale: match the listing description in marketplace.json and both READMEs to plugin.json
+- `99b609a` Merge pull request #810 from cursor/eliu/tailscale-skill-1.0.3
+
+Measured with `bun tools/sync.mjs pstack 99b609a`: 113 unchanged, 49 forked and untouched, 38 excluded, nothing updated, merged, or conflicted. No substitution rule or `tools/forks.json` change was needed, and the arena, interrogate, and setup-pstack Codex seats are untouched. The upstream pin in `docs/reference.md` now names `99b609a`.
+
 ## 0.1.15 - sync to upstream 9580c23 (v0.15.32): ketchup-video, statechart renderer, watch-pr and orch fixes
 
 Users get the new `/ketchup-video` skill, which catches you up like `/ketchup` but shows what happened as a short silent slide video, with the waiting calls as text under it. The statechart skill picks up upstream's rewrite with the Pele renderer and its new scripts. Generated formal verification skills now tell the next agent to read each TLA+ result with `/statechart`. `/reflect` never edits a skill in the plugin cache. It copies the skill to `.claude/skills/` or `~/.claude/skills/` first and edits the copy. `/swarm` numbers its Phase A steps 1 to 4 again, and orch picks a branch's one open pull request over closed or merged ones left behind by stack surgery. pstack-claude has nothing new since 0.9.102, so this release merges none of Michael's commits.
