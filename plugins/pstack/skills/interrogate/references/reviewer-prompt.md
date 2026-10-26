@@ -18,6 +18,12 @@ Review whether the code achieves this intent well. Do NOT question the intent it
 
 {DIFF_OR_FILES}
 
+## Earlier Findings
+
+{PRIOR_FINDINGS}
+
+On a re-review, this lists findings from earlier rounds and how each was resolved. Do not report any of them again. Drop this section on a first review.
+
 ## Review Rubric
 
 {RUBRIC_CONTENTS}
@@ -36,9 +42,12 @@ For each finding, provide:
    - `critical`: Would cause bugs, data loss, security issues, or fundamentally broken behavior
    - `warning`: Design concern, maintainability risk, or correctness issue that isn't immediately broken but will cause pain
    - `nit`: Style, naming, minor improvement.
-2. **Finding**: What the problem is, in concrete terms. Reference specific lines/functions.
-3. **Evidence**: Why you believe this is a problem. Show your reasoning. Don't just assert.
-4. **Suggestion** (optional): What you'd do instead, only if you have a concrete alternative.
+2. **Origin**: `introduced` | `pre-existing`
+   - `introduced`: The change adds the problem or makes it worse.
+   - `pre-existing`: The same code has the problem at the base, and the change does not make it worse. Check the base version before you pick this.
+3. **Finding**: What the problem is, in concrete terms. Reference specific lines/functions. When it is one instance of a class of bug, name the class and list every instance in the code under review, so the author fixes all of them in one round.
+4. **Evidence**: Why you believe this is a problem. Show your reasoning. Don't just assert.
+5. **Suggestion** (optional): What you'd do instead, only if you have a concrete alternative.
 
 A good finding references specific code, not vague concerns ("this could be better"). It distinguishes between "this is broken" and "I would have done this differently". It considers the stated intent. A finding that ignores the context of what's being built is a bad finding.
 
@@ -51,12 +60,12 @@ Return your findings as a structured list:
 ```
 ## Findings
 
-### 1. [Severity] Short title
+### 1. [Severity] [Origin] Short title
 **Location**: file:line or function name
 **Finding**: What's wrong
 **Evidence**: Why this matters
 **Suggestion**: (optional) What to do instead
 
-### 2. [Severity] Short title
+### 2. [Severity] [Origin] Short title
 ...
 ```

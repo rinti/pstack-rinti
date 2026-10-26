@@ -23,6 +23,8 @@ Identify what to review from context:
 
 Package the diff or file contents with any surrounding context files the reviewers need to understand the code.
 
+**Re-review.** When an earlier interrogate verdict on the same change exists in this session, scope the reviewers to the diff since that verdict's head, and pass them its findings with each one's bucket and how it was resolved. A finding already fixed, dismissed, or noted is not reported again. After three rounds on the same change, do not run a fourth. Report the findings that keep coming back and question the approach instead.
+
 ## Step 2, Intent
 
 Before spawning reviewers, state the intent in one clear paragraph from the user's message, commit messages, the PR description if one exists, and the code. If you're unsure about the intent, ask the user before proceeding.
@@ -44,7 +46,7 @@ On Claude Code, a `codex:<model>` entry runs that reviewer through the Codex CLI
 
 If the `Agent` tool rejects a configured entry, run that reviewer on its family's table default and say so. Families go by model name, such as Opus, Fable, or Sonnet. With no family match, use Reviewer A's default. If it rejects a table default, spawn with the closest equivalent from the valid slugs in its error message (prefer the same family and reasoning tier), and open a separate PR to update the default table. Do not block the review on the slug issue. Never treat an alias entry as a rejected slug or apply either fallback to it.
 
-Read `references/reviewer-prompt.md` and fill in the same template for every reviewer with the stated intent, the diff or file contents, the rubric from `references/rubric.md`, and the code-quality lens from `references/code-quality-review.md`. Pick each subagent's reasoning level for the job, per the Subagents section of the **poteto-mode** skill.
+Read `references/reviewer-prompt.md` and fill in the same template for every reviewer with the stated intent, the diff or file contents, the rubric from `references/rubric.md`, the code-quality lens from `references/code-quality-review.md`, and on a re-review the earlier findings. Pick each subagent's reasoning level for the job, per the Subagents section of the **poteto-mode** skill.
 
 ## Step 4, Synthesize
 
@@ -52,12 +54,13 @@ As results come back, build a unified picture. Parse every reviewer's findings. 
 
 ## Step 5, Lead Judgment
 
-You are the lead reviewer, a pragmatic senior engineer, not a neutral aggregator. Read `references/lead-judgment.md` for the full framework. Put every finding in one of four buckets, with the model(s) that raised it and a one-line rationale.
+You are the lead reviewer, a pragmatic senior engineer, not a neutral aggregator. Read `references/lead-judgment.md` for the full framework. Put every finding in one of five buckets, with the model(s) that raised it and a one-line rationale.
 
 - **Act on**. Real issues affecting correctness, security, or maintainability given the actual goals. They would block a real PR.
 - **Consider**. Legitimate, but you're not sure they outweigh the cost of addressing them now. Worth the user's attention.
 - **Noted**. Technically valid but not actionable. Context-dependent, premature optimization, or low-impact at this stage.
 - **Dismissed**. Wrong, nitpicky, or missing context, with a brief reason.
+- **Pre-existing**. Real issues in code that is the same at the base, which the change does not make worse. They never block the change. Name each one as a follow-up.
 
 ## Output Format
 
@@ -78,6 +81,9 @@ You are the lead reviewer, a pragmatic senior engineer, not a neutral aggregator
 
 ### Dismissed
 [Each with a brief rationale.]
+
+### Pre-existing
+[Each: description, location, which models raised it.]
 
 ### Agreement Map
 [Where models agreed and diverged, and what that pattern tells us.]

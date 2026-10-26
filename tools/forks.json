@@ -38,8 +38,20 @@
     },
     "plugins/pstack/skills/interrogate/SKILL.md": {
       "kind": "port-feature",
-      "why": "pstack-rinti: Lets a codex:<model> entry in the interrogate reviewers line run that reviewer read-only through the Codex CLI from Claude Code, per the arena skill's Codex seats section.",
+      "why": "pstack-rinti: Lets a codex:<model> entry in the interrogate reviewers line run that reviewer read-only through the Codex CLI from Claude Code, per the arena skill's Codex seats section, and makes review rounds converge: a re-review covers only the diff since the last verdict, skips findings already resolved, and stops after three rounds, and findings in unchanged code go to a Pre-existing bucket that never blocks.",
       "since": "0.1.3",
+      "upstream": "not-proposed"
+    },
+    "plugins/pstack/skills/interrogate/references/lead-judgment.md": {
+      "kind": "policy",
+      "why": "pstack-rinti: Sends a real problem in code the author did not change to Pre-existing instead of Dismissed.",
+      "since": "0.1.17",
+      "upstream": "not-proposed"
+    },
+    "plugins/pstack/skills/interrogate/references/reviewer-prompt.md": {
+      "kind": "policy",
+      "why": "pstack-rinti: Makes each finding name its origin, introduced or pre-existing, and list every instance of its bug class, and gives the reviewer the earlier findings on a re-review so it does not report them again.",
+      "since": "0.1.17",
       "upstream": "not-proposed"
     },
     "plugins/pstack/skills/poteto-help/SKILL.md": {
@@ -68,7 +80,7 @@
     },
     "plugins/pstack/skills/poteto-mode/playbooks/babysit.md": {
       "kind": "policy",
-      "why": "Requires confirming that the first status read reports the requested PR or stack, and naming the merge frontier, before acting on it, and reports the watcher's behind-base gate to the branch owner instead of resolving it, as it does a conflict.",
+      "why": "Requires confirming that the first status read reports the requested PR or stack, and naming the merge frontier, before acting on it, and reports the watcher's behind-base gate to the branch owner instead of resolving it, as it does a conflict, and, for pstack-rinti, fixes every instance of a review finding's bug class in one push wave and answers a finding in unchanged code as pre-existing instead of fixing it in the PR.",
       "since": "0.9.39",
       "upstream": "not-proposed"
     },
@@ -92,7 +104,7 @@
     },
     "plugins/pstack/skills/poteto-mode/playbooks/opening-a-pr.md": {
       "kind": "policy",
-      "why": "Requires stopping every live agent that holds a worktree before committing, merging, or deploying from it.",
+      "why": "Requires stopping every live agent that holds a worktree before committing, merging, or deploying from it, and, for pstack-rinti, adds a Revert section to the PR body that names what a plain revert misses.",
       "since": "0.9.10",
       "upstream": "not-proposed"
     },

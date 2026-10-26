@@ -2,6 +2,14 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.17 - converging review rounds and a Revert section in PR bodies
+
+Review rounds in `/interrogate` now converge instead of finding one more old bug each time. When a change was already interrogated, the next round covers only the diff since that verdict and gets the earlier findings, so reviewers do not report them again. After three rounds the lead stops and questions the approach. Each finding states whether the change introduced it or the code already had it at the base. Real problems the change did not cause go to a new Pre-existing bucket. That bucket never blocks the change and names each problem as a follow-up. A finding that is one instance of a class of bug lists every instance, so one round fixes all of them.
+
+The Babysit playbook applies the same two rules to review-bot comments. It fixes every instance of a finding's class in one push wave, and it answers a finding in unchanged code as pre-existing instead of fixing it in the PR. PR bodies from the Opening a PR playbook get an optional `## Revert` section that says what a plain revert would miss, such as a migration or a published release.
+
+The ideas come from the Claude Code team's account of their own code review. In their data, about 59% of what the reviewer kept flagging across rounds was code older than the PR.
+
 ## 0.1.16 - sync to upstream 99b609a (v0.15.32): pin only
 
 Users get no change to any skill. pstack-claude has nothing new since 0.9.102, so this release merges none of Michael's commits.
