@@ -2,6 +2,24 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.18 - sync to upstream ed23919 (v0.15.32): pin only
+
+Users get no change to any skill. pstack-claude has nothing new since 0.9.102, so this release merges none of Michael's commits.
+
+The upstream pin moves from `99b609a` to `ed23919`, still v0.15.32. The range has no pstack commits. Its commits touch only `third_party/tailscale` and `third_party/ringcentral`, which no component of this port carries, and the cursor/plugins marketplace listing and README for them:
+
+- `82ad96d` tailscale: rewrite the setup skill for per-tailnet slots, company postures, and personal Connect or tag:grokbot (1.0.4)
+- `8ad047b` tailscale: cover one-click Connect, tag:grokbot, and the company tailnet in the plugin description.
+- `c003aa5` tailscale: restore the user-facing plugin description without join-path implementation details.
+- `139cc15` tailscale: match the skill to current routing, refusals and troubleshooting.
+- `053b6e0` tailscale: say how members switch personal tailnets.
+- `a6adec6` tailscale: split the app-allow and plan sign-in errors, and note public DNS names aren't followed.
+- `9e88dad` Merge pull request #899 from cursor/eliu/tailscale-skill-1.0.3
+- `700e302` Add RingCentral RingEX Phone plugin
+- `ed23919` Merge pull request #952 from cursor/cursor/ringcentral-ringex-phone-labs
+
+Measured with `bun tools/sync.mjs pstack ed23919`: 111 unchanged, 51 forked and untouched, 38 excluded, nothing updated, merged, or conflicted. No substitution rule or `tools/forks.json` change was needed, and this fork's Codex seats and converging review rounds are untouched. The upstream pin in `docs/reference.md` now names `ed23919`.
+
 ## 0.1.17 - converging review rounds and a Revert section in PR bodies
 
 Review rounds in `/interrogate` now converge instead of finding one more old bug each time. When a change was already interrogated, the next round covers only the diff since that verdict and gets the earlier findings, so reviewers do not report them again. After three rounds the lead stops and questions the approach. Each finding states whether the change introduced it or the code already had it at the base. Real problems the change did not cause go to a new Pre-existing bucket. That bucket never blocks the change and names each problem as a follow-up. A finding that is one instance of a class of bug lists every instance, so one round fixes all of them.
