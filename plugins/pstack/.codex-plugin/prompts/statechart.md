@@ -1,6 +1,6 @@
 ---
 name: statechart
-description: draw what the user sees as a Mermaid statechart checked by a TLA+ model, with each bug as a numbered path, or turn an agreed chart into a TLA+ skeleton
+description: check a TLA+ model and draw it as a Mermaid statechart, with the shortest path to each state that breaks a rule
 disable-model-invocation: true
 ---
 

@@ -2,6 +2,25 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.19 - merge pstack-claude 0.9.103 and sync to upstream 519d36a (v0.15.34): /statechart rewritten in TypeScript
+
+`/statechart` is now upstream's rewrite in TypeScript. It takes one TLA+ spec and its config and runs `scripts/statechart SPEC.tla [--config FILE] [--view FILE] [--out DIR]`, which picks Node 22.18 or later, Bun 1.1.5 or later, or Deno 2.0 or later. A view module gives the words on each state and arrow, the phases and their colors, and the title. The state labels can be flat, nested, or one parallel region per key. The report gives the shortest path to each state that breaks a rule, marks each such state `breaks` or `mayBreak`, and lists any rule that TLC did not check. Charts render as SVG with the `pele` npm package, per the new `references/render.md`. The old `from-chart` direction, which turned an agreed chart into a TLA+ skeleton, is gone, and so are `--against`, `--fixed`, `--cover`, and the PNG output. `/create-formal-verification-skill` no longer says that `/statechart` tells which violations a change fixes, and the `/poteto-help` row and the `/statechart` slash-command description now match the new skill.
+
+This release merges Michael's pstack-claude through 0.9.103:
+
+- `dfa183e` Pin CI Bun to 1.4.4 for CVE-2026-111497 (#316), taken whole.
+- `36885ea` Sync to upstream e73df47 (v0.15.32), add /statechart and /ketchup-video, release 0.9.103 (#313), taken in part. Its tools, tests, CI, and `CONTRIBUTING.md` changes are taken whole: `sync.mjs --check-rules` and its CI step, the deletion of 14 stale substitution rules, the `restart Cursor` denylist entry, the swarm rule split around its step number, and the `/statechart` CI job. Its README note on turning on auto-update is taken, with `pstack-claude` changed to this fork's `pstack-rinti` marketplace. Its skill text under `plugins/pstack` was already here, because this fork had synced to `ed23919`, which is newer than his `e73df47`. Where both sides changed the same lines, this fork's side was kept. Both sides had split the swarm `environment: "cloud"` rule. His unscoped rules are kept and this fork's `files`-scoped copies are deleted, with the rule for `not the cloud concurrency limit.`, which matches nothing upstream. His NOTICE row for the two new skills is replaced by a `ketchup-video` row at `3c0fdb4`, the commit that added it, below this fork's `statechart` row at `eb4db2b`. His 0.9.x version numbers are not taken.
+
+The upstream pin moves from `ed23919` to `519d36a`, upstream v0.15.34:
+
+- `34b1b7c` feat(pstack): port the statechart compiler (#977)
+- `7c7bde7` chore(pstack): bump to 0.15.33 (#978)
+- `740d2c0` fix(pstack): keep qualified action names in property traces (#982)
+- `164ced1` chore(pstack): bump to 0.15.34 (#983)
+- `519d36a` test(pstack): wait for the reap in the statechart SIGKILL view test (#981)
+
+Measured with `bun tools/sync.mjs pstack 519d36a`: 83 files unchanged, 38 excluded, 2 updated, 1 merged (`poteto-help/SKILL.md`, whose port fork is unchanged), 406 added, 25 deleted, and 1 conflict. No denylist token was hit and no substitution rule was needed. The conflict is `statechart/scripts/test/statechart.test.mjs`, which upstream deleted with the rest of the `.mjs` scripts and which Michael had forked in 0.9.103 so that it passes on macOS. The file and its `tools/forks.json` entry are gone, because the suite they fixed no longer exists. Upstream's new suite is `node --test test/*.test.ts` with `fast-check` as its one dependency. Michael's `/statechart` CI job now runs it: it reads the TLC pin from `TLC_TOOL` in `run.ts`, installs the dependency with npm, and runs `npm test`, and it drops the renderer install step, because the render cases install Pele themselves. On this macOS machine, without `TLA2TOOLS`, the new suite gives 192 pass, 67 skip, and 2 fail. The fails are the symlinked-launcher case under `/private/tmp` and the render file, which installs Pele from npm. This fork's Codex seats and converging review rounds are untouched. The upstream pin in `docs/reference.md` now names `519d36a`.
+
 ## 0.1.18 - sync to upstream ed23919 (v0.15.32): pin only
 
 Users get no change to any skill. pstack-claude has nothing new since 0.9.102, so this release merges none of Michael's commits.
