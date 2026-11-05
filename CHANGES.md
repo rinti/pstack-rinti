@@ -2,6 +2,93 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.20 - merge pstack-claude 0.9.130 and sync to upstream 2776ddd (v0.15.36): new runtimes, agentic Orchestrate
+
+pstack now installs on Kimi Code CLI, Grok Build, OMP, OpenCode 2, Antigravity, and MiniMax Code, each from this fork's `rinti/pstack-rinti` repository or `pstack-rinti` marketplace, as the README's install sections show. The Orchestrate playbook is upstream's agentic rewrite: the coordinator runs workers with the `Agent` tool and tracks the program in `~/.claude/orchestrate/<slug>/notes.md`, and the `orch` scripts are gone. `/interrogate` keeps only findings that a rerun of their command confirms, and this fork's converging review rounds sit on that shape. `/statechart` runs on Windows. The Codex prompt stubs are gone, because current Codex loads none of them, and each skill still serves its own slash command. GPT-6.1 Sol and GPT-6.1 Terra are the Codex defaults and panel. `/no-comments` and the thermos reviewers get their own model roles.
+
+This release merges Michael's pstack-claude through 0.9.130, his releases 0.9.104 to 0.9.130. His 0.9.x version numbers are not taken.
+
+- `706fe37` Let a pi ask tool: off sheet line hand ask_user_question to another extension, release 0.9.104 (#318), taken whole, without its version number.
+- `1b01ed1` Sync to upstream ab1f702 (v0.15.35), release 0.9.105 (#319), taken in part. Its tools, tests, CI, and skill text are taken. In `interrogate/SKILL.md` this fork keeps its converging review rounds, already ported onto the new shape in `51a705a`. In `arena/SKILL.md` his new runner step is taken with this fork's Codex seat sentence added back.
+- `abd512a` Hold comments on dependency and platform rules /no-comments cannot settle, release 0.9.106 (#320), taken whole, without its version number.
+- `e2cbd49` Fix plan validation and release 0.9.107 (#321), taken whole, without its version number.
+- `e397ed5` ci: bump zizmorcore/zizmor-action from 0.6.4 to 0.7.1 (#322), taken whole.
+- `eee4144` Add a README section on how the port differs from upstream's Claude Code install (#323), taken whole.
+- `53307e2` Run the statechart suite under a watchdog that prints a stall's stacks and model (#325), taken whole.
+- `47c6f80` Re-run the script after bootstrap installs commander, release 0.9.108 (#327), taken whole, without its version number.
+- `d9566fc` Add GPT-6.1 Terra to the Codex panel, release 0.9.109 (#328), taken whole, without its version number.
+- `c121342` Use GPT-6.1 Sol for the Codex default and panel, release 0.9.110 (#329), taken whole, without its version number.
+- `190fc9a` Replace GPT-6 Sol with GPT-6.1 Sol in the worker and Pi sonnet mappings, release 0.9.111 (#330), taken whole, without its version number.
+- `01413a7` Give session-start.ps1 a runtime argument (#334), taken whole.
+- `22b5e13` Run the Muse SessionStart hook under PowerShell on Windows, release 0.9.112 (#332), taken whole, without its version number.
+- `bfaf03e` Read current Codex session effort before dispatch, release 0.9.113 (#333), taken whole, without its version number.
+- `8ccb2a7` Warm up Windows PowerShell before the Windows hook tests (#338), taken whole.
+- `621c9b1` Split the statechart tests across three runners (#339), taken whole.
+- `7aac14b` Name the Muse plugin in setup-pstack's session hook sentence (#340), taken whole.
+- `61c7e6b` Stamp the Muse SessionStart hooks from MUSE_HOOKS (#341), taken whole.
+- `5851c89` Read malformed UTF-16 sheets the same way in every session hook, release 0.9.114 (#342), taken whole, without its version number.
+- `fa55f4e` Warm ConvertFrom-Json before the Windows hook tests (#343), taken whole.
+- `a6d77b8` Give the thermos reviewers a model role, release 0.9.115 (#348), taken whole, without its version number.
+- `5138577` Run statechart on Windows, release 0.9.116 (#349), taken whole, without its version number.
+- `8ecae68` Give the no-comments reviewer a model role, release 0.9.117 (#350), taken whole, without its version number.
+- `6ef1c24` Name the SessionStart hook for Codex and Claude Code, release 0.9.118 (#355), taken whole, without its version number.
+- `2232ce5` Say where Codex shows the hook name in the 0.9.118 entry (#356), taken whole.
+- `16cc0da` Register user agents from pstack-agents under bare names (#351), taken whole.
+- `7e06562` Name the starting session in a child's PI_SUBAGENT_PARENT_SESSION so permission asks reach the parent (#353), taken whole.
+- `364c77d` Read a Pi agent file's effort as its default below the call (#352), taken whole.
+- `7c045e5` Skip hidden user agent files, release 0.9.119 (#357), taken whole, without its version number.
+- `a656d25` Read YAML-quoted values and a byte-order mark in Pi agent frontmatter (#362), taken whole.
+- `6859834` Keep a Pi agent's completed record when a resume fails to launch (#363), taken whole.
+- `99e0ad2` Name every agent type, user files included, in the Pi subagent_type description (#364), taken whole.
+- `513c088` Name the agent file in a Pi error over its model or effort, release 0.9.120 (#365), taken whole, without its version number.
+- `d035679` Drop the live panel's three-model check that the openai table fails (#369), taken whole.
+- `c85a6e5` Name the agent file only in errors over its value, not a broken models.json (#370), taken whole.
+- `3d56053` List each Pi agent type with its description, release 0.9.121 (#371), taken whole, without its version number.
+- `9ddc784` Name the agent type in a child's system prompt so a forwarded permission ask shows it instead of "unknown" (#366), taken whole.
+- `cd53ffc` Keep parentheses in bare Markdown link destinations (#368), taken whole.
+- `6da5afa` Deliver agent-chosen wakeups as custom messages, not user messages (#367), taken whole.
+- `c951b52` Support native Windows checkouts in the generator (#372), taken whole.
+- `aa4e6fe` Release 0.9.122 (#374), taken whole, without its version number.
+- `56e1663` Poll again when the statechart write-phase test's walk meets the worker's draft rename (#373), taken whole.
+- `dec67d0` Sync to upstream c742dd6 (v0.15.36): agentic Orchestrate, orch scripts removed, release 0.9.123 (#376), taken whole. This fork's own `**Coordinator (this chat).** Local.` rule for `orchestrate.md` matched nothing after it, so it is deleted.
+- `35d5313` Write the program objective into the store's notes.md, release 0.9.124 (#379), taken whole, without its version number.
+- `56abc45` Run pstack on MiniMax Code through its Claude Code reader, release 0.9.125 (#380), taken, with the README clone pointed at `rinti/pstack-rinti`.
+- `b10b942` Credit #372 in the 0.9.122 changelog entry (#377), taken whole.
+- `a53c0f8` Shard the statechart tests by measured time, and time out every CI job (#378), taken whole.
+- `3fc2651` Register the print-mode Ctrl-C handler beside Pi's signal-exit listener (#381), taken whole.
+- `784fd17` Add the Awesome Claude Code badge to the README (#383), not taken. This fork carries no README badges, as it dropped his donation badge before.
+- `8a9d851` Read Pi agent frontmatter with Pi's parseFrontmatter, release 0.9.126 (#382), taken whole, without its version number.
+- `7641b0d` Serialize prompt stub frontmatter with Bun.YAML.stringify (#385), taken whole.
+- `18c3c79` Inline readSnapshot's CI logic in upstream's shape (#386), taken whole.
+- `c37118f` Add a pi agent tools: off sheet line for profiles that delegate through another subagent extension (#384), taken whole.
+- `2dc481b` Remove the Codex prompt stubs that current Codex never loads (#388), taken whole, including the deletion of the `ketchup-video`, `sharpen`, and `statechart` stubs this fork had regenerated.
+- `c12af32` Keep the verbatim playbook checklist beside the desktop app's update_plan (#389), taken whole.
+- `8bce1c0` Release 0.9.127 (#391), taken whole, without its version number.
+- `8919117` Add #389 to the 0.9.127 changelog entry (#392), taken whole.
+- `aafd654` fix(pstack): clear the plugin directory's credential-forward hold (#393), taken whole.
+- `79b36d9` Drop the pi agent tools: off prompt sentence, release 0.9.128 (#395), taken whole, without its version number.
+- `fe78b6e` ci: bump zizmorcore/zizmor-action from 0.7.1 to 0.8.0 (#399), taken whole.
+- `d97547d` Wait for the child's invocation record in the agents-run transcript test (#402), taken whole.
+- `e66f85f` Add Antigravity (agy) native plugin support (#390), taken, with the Antigravity manifest's author and repository set to this fork and the README clone pointed at `rinti/pstack-rinti`.
+- `d58d761` Release 0.9.129 (#404), taken whole, without its version number.
+- `e02c723` fix(pstack): clear the directory's download-and-run warnings (#403), taken whole.
+- `aa81308` Return JSON for disabled Antigravity hook (#405), taken whole.
+- `ae1bacc` Add native Kimi Code plugin support (#394), taken, with `kimi.plugin.json` and the README install pointed at `rinti/pstack-rinti`.
+- `2f789d9` Add native Grok Build plugin guidance (#398), taken, with the README clone pointed at `rinti/pstack-rinti`.
+- `710b47e` Clarify MiniMax local plugin update safety (#401), taken whole.
+- `1a245a2` Add native OMP plugin support (#396), taken, with the README install pointed at the `pstack-rinti` marketplace.
+- `98e5f9c` Avoid Bun realpath stalls in macOS worktree audits (#406), taken whole.
+- `26725b7` Add native OpenCode v2 plugin support (#397), taken, with the README clone and `opencode plugin` lines pointed at `rinti/pstack-rinti`.
+- `5e532b4` Clarify Kimi setup model inheritance (#407), taken whole.
+- `b07270c` Fix Grok setup model discovery (#408), taken whole.
+- `d0731ab` Tighten deslop, how, session-pickup, and Codex transcript guidance (#400), taken whole.
+- `477c077` Release 0.9.130 (#409), taken whole, without its version number.
+- `d88063f` Correct Grok subagent rows against Grok's subagent guide (#410), taken whole.
+
+Where his skill text and this fork's conflicted, his pin `c742dd6` was newer than this fork's `519d36a`, so his translation was taken and this fork's forks were put back on it. `arena/SKILL.md` takes his new runner step, which drops a seat the `Agent` tool rejects, and adds back the sentence that sends a `codex:<model>` entry to [Codex seats](plugins/pstack/skills/arena/SKILL.md#codex-seats). Arena no longer has a single-role default, so a Codex seat without `codex` on `PATH` now runs on the first `arena runners` default, which is still Opus, as the README says. `setup-pstack/SKILL.md` takes his new cross-judge sentence and keeps the `codex:<model>` offer. `poteto-mode/SKILL.md` takes his Explain the Number wording and keeps the tautological-test sentence. `interrogate/SKILL.md` keeps this fork's file, which differs from his only by the convergence rules. The `tools/forks.json` reasons for `poteto-mode/SKILL.md` and `setup-pstack/SKILL.md` take his longer text and keep the `pstack-rinti` clause, and the `interrogate/SKILL.md` entry stays. His new manifests carry this fork's identity, and the generator stamps them with this fork's version.
+
+The upstream pin moves from `c742dd6`, which Michael's merge brought, to `2776ddd`, still v0.15.36. The range has 32 commits and none touches `pstack/`. They add or update third-party plugins (Tesla, Tailscale, the X MCP guide, Lark Base, Gopuff, Questrade, Business Central, and OnePay), which no component of this port carries. Measured with `bun tools/sync.mjs pstack 2776ddd`: 471 files unchanged, 64 forked and untouched, 38 excluded, nothing updated, merged, or conflicted. No denylist token was hit, and no substitution rule or `tools/forks.json` change was needed. The upstream pin in `docs/reference.md` now names `2776ddd`.
+
 ## 0.1.19 - merge pstack-claude 0.9.103 and sync to upstream 519d36a (v0.15.34): /statechart rewritten in TypeScript
 
 `/statechart` is now upstream's rewrite in TypeScript. It takes one TLA+ spec and its config and runs `scripts/statechart SPEC.tla [--config FILE] [--view FILE] [--out DIR]`, which picks Node 22.18 or later, Bun 1.1.5 or later, or Deno 2.0 or later. A view module gives the words on each state and arrow, the phases and their colors, and the title. The state labels can be flat, nested, or one parallel region per key. The report gives the shortest path to each state that breaks a rule, marks each such state `breaks` or `mayBreak`, and lists any rule that TLC did not check. Charts render as SVG with the `pele` npm package, per the new `references/render.md`. The old `from-chart` direction, which turned an agreed chart into a TLA+ skeleton, is gone, and so are `--against`, `--fixed`, `--cover`, and the PNG output. `/create-formal-verification-skill` no longer says that `/statechart` tells which violations a change fixes, and the `/poteto-help` row and the `/statechart` slash-command description now match the new skill.
