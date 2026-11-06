@@ -2,6 +2,23 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.21 - merge pstack-claude 0.9.132, upstream stays at 2776ddd (v0.15.36)
+
+`resume.mjs` now ignores links inside the fenced code blocks of a resume note saved with CRLF line endings or a leading byte order mark. Before, `publish` read the links inside such a fence and failed with `does not resolve (ENOENT)`. Each runtime mapping's Model names section (`codex-tools.md`, `pi-tools.md`, `copilot-tools.md`, `muse-tools.md`, `minimax-tools.md`, `agy-tools.md`, and `grok.md`) now names only `arena`, `architect`, and `interrogate` as diverse-model panels, the skills with a `panel` role in `models.json`, where it also named `how` critics and `reflect`. The Platform Adaptation sentence in `poteto-mode/SKILL.md` now says "On GitHub Copilot" without "CLI or app".
+
+This release merges pstack-claude through `df9bc05`, its releases 0.9.131 and 0.9.132:
+
+- `f978a22` fix(pstack): name only the panel-tier skills as diverse-model panels, release 0.9.131 (#411), taken whole, without its version number.
+- `8137fcf` Pin each Build's routing mandate copy to the base mandate (#415), taken whole.
+- `e0c4081` refactor(pstack): build the diverse-model panel list from models.json (#412), taken whole.
+- `a88df17` refactor(pstack): stamp poteto-mode's Platform Adaptation sentence from RUNTIMES (#413), taken whole. Its `tools/forks.json` reason for `poteto-mode/SKILL.md` conflicted with this fork's, so the entry takes his new wording and keeps the `pstack-rinti` clause on tautological tests.
+- `531b9fc` Ignore links in fenced code blocks of CRLF and BOM resume notes (#416), taken whole.
+- `df9bc05` Release 0.9.132 (#417), taken whole, without its version number.
+
+The only other conflicts were the release numbers: every manifest keeps this fork's `0.1.x` version, and `CHANGES.md` leaves out the `0.9.131` and `0.9.132` headings, which this entry summarizes. His pin (`c742dd6`) is older than this fork's, so `tools/upstream.json` keeps `2776ddd`. The arena, interrogate, and setup-pstack Codex seats, the converging review rounds, and this fork's other forks are untouched.
+
+The upstream pin already equals the newest `cursor/plugins` commit, `2776ddd`, so this run syncs nothing from upstream. Measured with `bun tools/sync.mjs pstack 2776ddd --dry-run` after the merge: 471 files unchanged, 64 forked and untouched, 38 excluded, nothing written or conflicted. No substitution rule was needed.
+
 ## 0.1.20 - merge pstack-claude 0.9.130 and sync to upstream 2776ddd (v0.15.36): new runtimes, agentic Orchestrate
 
 pstack now installs on Kimi Code CLI, Grok Build, OMP, OpenCode 2, Antigravity, and MiniMax Code, each from this fork's `rinti/pstack-rinti` repository or `pstack-rinti` marketplace, as the README's install sections show. The Orchestrate playbook is upstream's agentic rewrite: the coordinator runs workers with the `Agent` tool and tracks the program in `~/.claude/orchestrate/<slug>/notes.md`, and the `orch` scripts are gone. `/interrogate` keeps only findings that a rerun of their command confirms, and this fork's converging review rounds sit on that shape. `/statechart` runs on Windows. The Codex prompt stubs are gone, because current Codex loads none of them, and each skill still serves its own slash command. GPT-6.1 Sol and GPT-6.1 Terra are the Codex defaults and panel. `/no-comments` and the thermos reviewers get their own model roles.
