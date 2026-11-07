@@ -2,6 +2,21 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.22 - sync to upstream 6b03002 (v0.15.36): pin only
+
+Users get no change to any skill. pstack-claude has nothing new since `df9bc05` (0.9.132), which 0.1.21 merged, so this release merges none of Michael's commits.
+
+The upstream pin moves from `2776ddd` to `6b03002`, still v0.15.36. The range has no pstack commits. Its six commits touch only `third_party/x` and the new `third_party/fitmetrics`, which no component of this port carries, and the cursor/plugins marketplace listing and README for them:
+
+- `2101076` feat(third_party): add FitMetrics plugin
+- `8ecfb19` Merge pull request #1185 from cursor/add-fitmetrics-plugin
+- `fb4bf31` X MCP guide: find a contact's thread with participant_query
+- `fb77aaa` X MCP guide: step-by-step playbook to find or message a contact
+- `e336b83` X plugin 2.11.1: changelog for the contact playbook and the X DM send rule
+- `6b03002` Merge pull request #1186 from santiagomed/cursor/x-guide-chat-lookup-f5dd
+
+Measured with `bun tools/sync.mjs pstack 6b03002`: 471 unchanged, 64 forked and untouched, 38 excluded, nothing updated, merged, or conflicted. No denylist token was hit, no substitution rule or `tools/forks.json` change was needed, and this fork's Codex seats and converging review rounds are untouched. The upstream pin in `docs/reference.md` now names `6b03002`.
+
 ## 0.1.21 - merge pstack-claude 0.9.132, upstream stays at 2776ddd (v0.15.36)
 
 `resume.mjs` now ignores links inside the fenced code blocks of a resume note saved with CRLF line endings or a leading byte order mark. Before, `publish` read the links inside such a fence and failed with `does not resolve (ENOENT)`. Each runtime mapping's Model names section (`codex-tools.md`, `pi-tools.md`, `copilot-tools.md`, `muse-tools.md`, `minimax-tools.md`, `agy-tools.md`, and `grok.md`) now names only `arena`, `architect`, and `interrogate` as diverse-model panels, the skills with a `panel` role in `models.json`, where it also named `how` critics and `reflect`. The Platform Adaptation sentence in `poteto-mode/SKILL.md` now says "On GitHub Copilot" without "CLI or app".
