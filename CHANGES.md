@@ -2,6 +2,22 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.23 - merge pstack-claude 0.9.133, upstream stays at 6b03002 (v0.15.36)
+
+`worktree-audit.mjs` now checks a worktree's ancestry against `refs/remotes/origin/<trunk>`, and reads the REMOTE column's ahead count from `refs/remotes/origin/<branch>`. Before, a tag or local branch named `origin/<trunk>` won git's shorthand lookup, so the audit could report unmerged work as merged and safe. When a branch has several PRs, the audit now holds the worktree for an open one even when `gh` lists a newer closed or merged PR first. `setup-pstack`'s `SKILL.md` now covers the Claude Code path only, and every other runtime reads the sheet-path table and its own step changes in [`references/runtimes.md`](plugins/pstack/skills/setup-pstack/references/runtimes.md) first. OpenCode 2 and Antigravity setup skip the effort questions, because their subagent calls take no effort. Installed copies of the plugin now carry `LICENSE` at the plugin root, generated from the root file.
+
+This release merges pstack-claude through `91ab921`, his release 0.9.133:
+
+- `f34cab6` fix(worktree-audit): check ancestry against the exact remote trunk ref (#423), taken whole.
+- `c6a0042` fix(worktree-audit): preserve open PR holds across matching records (#424), taken whole.
+- `0040103` Move setup-pstack's per-runtime setup into references/runtimes.md (#422), taken whole. Its step 5 sentence conflicted with this fork's Codex seat check, so step 5 takes his wording, which moves the Codex `reasoning_effort` note to `references/runtimes.md`, and keeps this fork's `codex exec` check for `codex:<model>` entries. Step 3 keeps this fork's `codex:<model>` offer, which still describes the Claude Code path the file now covers. The `tools/forks.json` reason takes his `references/runtimes.md` wording and keeps the `pstack-rinti` clause.
+- `8074b9f` Release 0.9.133: follow up #422-#424 (#426), taken whole, without its version number.
+- `91ab921` feat(pstack): generate plugins/pstack/LICENSE and shorten the Grok smoke test's placeholder key (#427), taken whole. The generated copy carries this fork's root `LICENSE`, with the `Copyright (c) 2026 Andreas Bernacca` line.
+
+The only other conflicts were the release numbers: every manifest keeps this fork's `0.1.x` version, and `CHANGES.md` leaves out the `0.9.133` heading, which this entry summarizes. His pin (`c742dd6`) is older than this fork's, so `tools/upstream.json` keeps `6b03002`. The arena and interrogate Codex seats, the converging review rounds, and this fork's other forks are untouched.
+
+The upstream pin already equals the newest `cursor/plugins` commit, `6b03002`, so this run syncs nothing from upstream. Measured with `bun tools/sync.mjs pstack 6b03002 --dry-run` after the merge: 471 files unchanged, 64 forked and untouched, 38 excluded, nothing written or conflicted. No substitution rule was needed.
+
 ## 0.1.22 - sync to upstream 6b03002 (v0.15.36): pin only
 
 Users get no change to any skill. pstack-claude has nothing new since `df9bc05` (0.9.132), which 0.1.21 merged, so this release merges none of Michael's commits.
