@@ -2,6 +2,27 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.24 - merge pstack-claude 7e89063, sync to upstream 236e548 (v0.15.36)
+
+The Bug fix playbook now has a [focused-fix exception](plugins/pstack/skills/poteto-mode/playbooks/bug-fix.md#focused-fix-exception). When runtime evidence puts the cause in one subsystem, the fix keeps interfaces and state semantics, a cheap regression check exists, and no competing design remains, one delegate investigates and fixes without the `how`, `why`, and `architect` fan-out. The lead still plans, reviews, and verifies. A change to an interface, ownership, schema, migration, concurrency or transaction guarantee, or deployment or routing contract now needs `architect` even inside one function, and a fix to code that enforces a security or data-integrity invariant needs an independent correctness reviewer before merge-ready. The bug-fix reply now separates verified code, what was published, what the runtime served, and blockers, and diagnostic output prints only selected non-sensitive fields. On GitHub Copilot, both hooks now run through `sh`, so they work when VS Code's agents window drops the execute bit, and on Windows they run their `powershell` command: SessionStart runs `session-start.ps1 copilot` and PreToolUse exits 0. On Antigravity, writing and command-running subagents now go to `TypeName self`, because Antigravity loads plugin agents without a tools list as read-only. The README's privacy section now says this port has no diary reporting and how to share feedback.
+
+This release merges pstack-claude through `7e89063`. He cut no release after 0.9.133, which 0.1.23 merged:
+
+- `3f62beb` ci: run HOL's plugin-scanner on pull requests and pushes to main (#428), taken whole.
+- `5ebc35a` Map Antigravity writing subagents to TypeName self (#433), taken whole.
+- `0dcb9cc` Run Copilot hooks through sh so they work without the execute bit (#435), taken whole.
+- `340961f` fix(pstack): add a focused bug-fix path and clearer handoffs (#438), taken whole. Its `tools/forks.json` reason for `poteto-mode/SKILL.md` conflicted with this fork's: the merged reason takes his focused-fix clause and keeps the `pstack-rinti` clause on tautological tests. In the README, his feedback link points at this fork's issues (`rinti/pstack-rinti`) instead of his, since a report about this install belongs here first.
+- `7e89063` Give Copilot's hooks PowerShell commands for Windows (#437), taken whole.
+
+His pin (`c742dd6`) is older than this fork's, so the merge kept `6b03002`. The arena and interrogate Codex seats, the converging review rounds, and this fork's other forks are untouched.
+
+The upstream pin moves from `6b03002` to `236e548`, still v0.15.36. The range has no pstack commits. Its two commits add `third_party/google-analytics` and its cursor/plugins marketplace listing and README entry, which no component of this port carries:
+
+- `b2a4925` Add the Google Analytics plugin for Grok Bot
+- `236e548` Merge pull request #1199 from cursor/eliu/google-analytics-plugin
+
+Measured with `bun tools/sync.mjs pstack 236e548`: 471 unchanged, 64 forked and untouched, 38 excluded, nothing updated, merged, or conflicted. No denylist token was hit, and no substitution rule or `tools/forks.json` change was needed for the sync. The upstream pin in `docs/reference.md` now names `236e548`.
+
 ## 0.1.23 - merge pstack-claude 0.9.133, upstream stays at 6b03002 (v0.15.36)
 
 `worktree-audit.mjs` now checks a worktree's ancestry against `refs/remotes/origin/<trunk>`, and reads the REMOTE column's ahead count from `refs/remotes/origin/<branch>`. Before, a tag or local branch named `origin/<trunk>` won git's shorthand lookup, so the audit could report unmerged work as merged and safe. When a branch has several PRs, the audit now holds the worktree for an open one even when `gh` lists a newer closed or merged PR first. `setup-pstack`'s `SKILL.md` now covers the Claude Code path only, and every other runtime reads the sheet-path table and its own step changes in [`references/runtimes.md`](plugins/pstack/skills/setup-pstack/references/runtimes.md) first. OpenCode 2 and Antigravity setup skip the effort questions, because their subagent calls take no effort. Installed copies of the plugin now carry `LICENSE` at the plugin root, generated from the root file.
