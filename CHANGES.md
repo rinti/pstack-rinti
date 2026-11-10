@@ -2,6 +2,28 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.25 - merge pstack-claude 42fcb61, sync to upstream de8ee15 (v0.15.36)
+
+On GitHub Copilot, the `reflect` row of the [Copilot mapping](plugins/pstack/skills/poteto-mode/references/copilot-tools.md) now says that its transcript search takes the normal permission flow, because Copilot's session-state directory is outside the workspace and the hook approves only paths inside it. For contributors, `tools/validate-skills.mjs`, `tools/sync.mjs`, and `tools/generate.mjs` now run when their path crosses a symlink, such as a worktree under `/tmp` on macOS, where `node tools/validate-skills.mjs` used to print nothing and exit 0. The watcher's port-only test cases now live in `watch-pr/policy.port.test.ts` and `watch-pr/github.port.test.ts`, so a sync that touches upstream's `policy.test.ts` or `github.test.ts` no longer merges them again. No skill text changes.
+
+This release merges pstack-claude through `42fcb61`. He cut no release after 0.9.133, which 0.1.23 merged:
+
+- `09835d6` fix(tools): run validate-skills and sync when their path crosses a symlink (#439), taken whole.
+- `42fcb61` test(watch-pr): move the port's own cases into port-only test files (#440), taken whole, with one line of this fork's kept. Upstream's pstack tree is the same at his pin (`c742dd6`) and this fork's, so `policy.test.ts` and `github.test.ts` take his translation of upstream's cases in place of the Prettier-wrapped one this fork wrote in 0.1.15. That drops this fork's rewrapped objects and its use of the `numbers` helper, which he moved to `github.port.test.ts`. The gh fixture case keeps this fork's deleted fork, whose head repository reads as `null`, as one fixture entry and one expected row in his one-line style, and the `tools/forks.json` reason for `github.test.ts` now names it. His reason for `policy.test.ts` replaces this fork's.
+
+The two files now fork 65 and 22 lines from upstream, and the pstack total is 2,032. The arena and interrogate Codex seats, the converging review rounds, and this fork's other forks are untouched.
+
+The upstream pin moves from `236e548` to `de8ee15`, still v0.15.36. The range has no pstack commits. Its six commits add `third_party/mixpanel` and `third_party/metricool`, rename `third_party/databricks-genie-one` to `third_party/databricks-genie`, and update the cursor/plugins marketplace listing and README, which no component of this port carries:
+
+- `36f8c1a` feat(third_party): add the Mixpanel plugin
+- `0bb6f37` Merge pull request #1200 from djiang-jq/djiang/mixpanel-plugin
+- `62c837e` feat(third_party): add the Metricool plugin
+- `1e9c3f4` Merge pull request #1201 from djiang-jq/djiang/metricool-plugin
+- `62670fc` rename(third_party): Databricks Genie One to Databricks Genie
+- `de8ee15` Merge pull request #1204 from djiang-jq/djiang/databricks-genie
+
+Measured with `bun tools/sync.mjs pstack de8ee15`: 471 unchanged, 64 forked and untouched, 38 excluded, nothing updated, merged, or conflicted. No denylist token was hit, and the sync needed no substitution rule and no `tools/forks.json` change. The upstream pin in `docs/reference.md` now names `de8ee15`.
+
 ## 0.1.24 - merge pstack-claude 7e89063, sync to upstream 236e548 (v0.15.36)
 
 The Bug fix playbook now has a [focused-fix exception](plugins/pstack/skills/poteto-mode/playbooks/bug-fix.md#focused-fix-exception). When runtime evidence puts the cause in one subsystem, the fix keeps interfaces and state semantics, a cheap regression check exists, and no competing design remains, one delegate investigates and fixes without the `how`, `why`, and `architect` fan-out. The lead still plans, reviews, and verifies. A change to an interface, ownership, schema, migration, concurrency or transaction guarantee, or deployment or routing contract now needs `architect` even inside one function, and a fix to code that enforces a security or data-integrity invariant needs an independent correctness reviewer before merge-ready. The bug-fix reply now separates verified code, what was published, what the runtime served, and blockers, and diagnostic output prints only selected non-sensitive fields. On GitHub Copilot, both hooks now run through `sh`, so they work when VS Code's agents window drops the execute bit, and on Windows they run their `powershell` command: SessionStart runs `session-start.ps1 copilot` and PreToolUse exits 0. On Antigravity, writing and command-running subagents now go to `TypeName self`, because Antigravity loads plugin agents without a tools list as read-only. The README's privacy section now says this port has no diary reporting and how to share feedback.
