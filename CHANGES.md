@@ -2,6 +2,26 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.27 - merge pstack-claude 36f4336, sync to upstream 5866df5 (v0.15.36)
+
+poteto-mode now reads project playbooks from `~/.agents/playbooks/` as well as from the repository's `.agents/playbooks/`, so a playbook that extends a bundled one can apply in every repository without a copy in each. Home playbooks take the same frontmatter and changes, and when playbooks from both folders fit a task, the home folder's changes apply first. `check-playbooks.mjs` checks both folders and names a home playbook by its `~/.agents/playbooks/` path. In `worktree-audit.mjs`, the REMOTE column now shows a worktree that is behind its pushed branch as `behindN` and a diverged one as `aheadN,behindN`, where it printed `ahead0` or only the ahead count. Whether a worktree is safe is decided as before.
+
+This release merges pstack-claude through `36f4336`, his release 0.9.136:
+
+- `90c721f` ci: bump zizmorcore/zizmor-action from 0.8.0 to 0.8.1 (#451), taken whole.
+- `950719e` ci: bump hashgraph-online/ai-plugin-scanner-action from 1.2.806 to 1.2.815 (#452), taken whole.
+- `d6d7788` Read project playbooks from ~/.agents/playbooks/ too (0.9.136) (#454), taken whole, without its version number. Its `poteto-mode/SKILL.md` edit is to the project playbooks paragraph, which the file's `tools/forks.json` reason already names, so the reason is unchanged.
+- `36f4336` Show behind and diverged remotes in the worktree audit (#453), taken whole.
+
+The only conflicts were the release numbers: `VERSION` and every manifest keep this fork's `0.1.x` version, and `CHANGES.md` leaves out the `0.9.136` heading, which this entry summarizes. His pin (`c742dd6`) is older than this fork's, so the merge kept `63912a9`. The arena and interrogate Codex seats, the converging review rounds, and this fork's other forks are untouched.
+
+The upstream pin moves from `63912a9` to `5866df5`, still v0.15.36. The range has no pstack commits. Its two commits add `third_party/eight-sleep`, which no component of this port carries:
+
+- `8162a75` feat(third_party): add the Eight Sleep plugin
+- `5866df5` Merge pull request #1212 from djiang-jq/djiang/eight-sleep-plugin
+
+Measured with `bun tools/sync.mjs pstack 5866df5`: 471 unchanged, 64 forked and untouched, 38 excluded, nothing updated, merged, or conflicted. No denylist token was hit, and the sync needed no substitution rule and no `tools/forks.json` change. The forked total stays at 2,034 lines. The upstream pin in `docs/reference.md` now names `5866df5`.
+
 ## 0.1.26 - merge pstack-claude bc09365, sync to upstream 63912a9 (v0.15.36)
 
 On Claude Code, a project can now commit its own sheet at `.claude/pstack-models.md` in the repository root, and in that repository it replaces the user's `pstack-models.md`. The SessionStart hook reads the project sheet first, so `session hook: off` in a committed sheet now turns routing off, where the hook used to read only the user's sheet. `setup-pstack` asks whether to configure the user sheet or the project sheet, writes a line in the project sheet saying it replaces the user's, and includes it from the `CLAUDE.md` at the repository root. On Pi, the `anthropic` provider's `fable` role runs `claude-fable-5-2`, where it ran `claude-fable-5-1`, and Pi 1.5.1 is the oldest supported Pi. To stay on Fable 5.1 there, add `pi models: fable=anthropic/claude-fable-5-1` to the sheet. The Pi extension's copy of the prompt-template argument splitter matches Pi 1.5.1: a quote opens only at the start of an argument, and a quote that never closes is text. On Codex, `codex-session-effort.mjs` finds the session's current rollout through `threads.rollout_path` in the state database, so after `thread/revert` it no longer reads the retired log and returns its stale effort. `worktree-audit.mjs` now reads Codex's compressed `.jsonl.zst` rollouts, so a worktree whose latest chat sits in one no longer shows an empty LAST_CHAT and reaches safe. A compressed rollout that cannot be decoded leaves LAST_CHAT unknown for every worktree, and the audit warns `transcript scan failed` with the file's path. For contributors, a malformed `substitutions.json`, `forks.json`, `upstream.json`, or `models.json` fails with a message that names the file, field, or entry, and a bare `bun test tests/` skips the installed-Pi catalog and argument checks with a warning when the installed Pi is older than 1.5.1.
