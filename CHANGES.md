@@ -2,6 +2,35 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.26 - merge pstack-claude bc09365, sync to upstream 63912a9 (v0.15.36)
+
+On Claude Code, a project can now commit its own sheet at `.claude/pstack-models.md` in the repository root, and in that repository it replaces the user's `pstack-models.md`. The SessionStart hook reads the project sheet first, so `session hook: off` in a committed sheet now turns routing off, where the hook used to read only the user's sheet. `setup-pstack` asks whether to configure the user sheet or the project sheet, writes a line in the project sheet saying it replaces the user's, and includes it from the `CLAUDE.md` at the repository root. On Pi, the `anthropic` provider's `fable` role runs `claude-fable-5-2`, where it ran `claude-fable-5-1`, and Pi 1.5.1 is the oldest supported Pi. To stay on Fable 5.1 there, add `pi models: fable=anthropic/claude-fable-5-1` to the sheet. The Pi extension's copy of the prompt-template argument splitter matches Pi 1.5.1: a quote opens only at the start of an argument, and a quote that never closes is text. On Codex, `codex-session-effort.mjs` finds the session's current rollout through `threads.rollout_path` in the state database, so after `thread/revert` it no longer reads the retired log and returns its stale effort. `worktree-audit.mjs` now reads Codex's compressed `.jsonl.zst` rollouts, so a worktree whose latest chat sits in one no longer shows an empty LAST_CHAT and reaches safe. A compressed rollout that cannot be decoded leaves LAST_CHAT unknown for every worktree, and the audit warns `transcript scan failed` with the file's path. For contributors, a malformed `substitutions.json`, `forks.json`, `upstream.json`, or `models.json` fails with a message that names the file, field, or entry, and a bare `bun test tests/` skips the installed-Pi catalog and argument checks with a warning when the installed Pi is older than 1.5.1.
+
+This release merges pstack-claude through `bc09365`, his releases 0.9.134 and 0.9.135:
+
+- `ba33373` fix(codex): resolve effort from the selected rollout (#432), taken whole, with one change of this fork's on top. On Node 22, loading `node:sqlite` prints `ExperimentalWarning: SQLite is an experimental feature` on stderr. His tests require the helper's stderr to be empty, so 11 of them failed on Node 22.19.0 and passed on Node 24.22.1, which his CI runs. `codex-session-effort.mjs` now drops that one warning while it loads `node:sqlite` and passes every other warning through, and the 26 tests pass on both Node versions. The file is port-only, so it has no `tools/forks.json` entry. A later merge that takes his side of this file brings the failures back on Node 22.
+- `b75e971` Let a project's own pstack-models.md replace the user's sheet on Claude Code (#443), taken whole. Its `tools/forks.json` reason for `setup-pstack/SKILL.md` conflicted with this fork's: the merged reason takes his "with a committed project sheet that replaces the user's" clause and keeps the `pstack-rinti` clause on `codex:<model>` entries. His `SKILL.md` edits merged without conflict, and steps 3 and 5 keep this fork's `codex:<model>` offer and check.
+- `31a859c` refactor(tools): stop exporting six generate.mjs helpers that have no importer (#446), taken whole.
+- `a691bd3` feat(pi): run fable on Fable 5.2 and make Pi 1.5.1 the oldest supported Pi (0.9.134) (#445), taken whole, without its version number.
+- `3d5d473` chore(pi): name the oldest supported Pi once and skip installed-Pi checks below it (#448), taken whole.
+- `327448d` fix(sync,generate): name the file or entry when config has the wrong shape (#418), taken whole.
+- `bc09365` fix(worktree-audit): include compressed Codex rollouts in activity checks (#425), taken whole, without its version number. This is his release 0.9.135.
+
+The only other conflicts were the release numbers: `VERSION` and every manifest keep this fork's `0.1.x` version, and `CHANGES.md` leaves out the `0.9.134` and `0.9.135` headings, which this entry summarizes. His pin (`c742dd6`) is older than this fork's, so the merge kept `de8ee15`. The arena and interrogate Codex seats, the converging review rounds, and this fork's other forks are untouched.
+
+The upstream pin moves from `de8ee15` to `63912a9`, still v0.15.36. The range has no pstack commits. Its eight commits remove `third_party/jobber` and `third_party/framer`, add and then revert `third_party/canva`, and update the cursor/plugins marketplace listing and README, which no component of this port carries:
+
+- `5fbaaa8` remove(third_party): remove Jobber plugin
+- `cd25582` Merge pull request #1207 from djiang-jq/djiang/remove-jobber-plugin
+- `512c179` remove(third_party): remove Framer plugin
+- `246bc50` Merge pull request #1208 from djiang-jq/djiang/remove-framer-plugin
+- `2f31c08` feat(third_party): add the Canva plugin
+- `1f87b07` Merge pull request #1209 from djiang-jq/djiang/canva-plugin
+- `e95d5d8` Revert "feat(third_party): add the Canva plugin"
+- `63912a9` Merge pull request #1210 from cursor/revert-1209-djiang/canva-plugin
+
+Measured with `bun tools/sync.mjs pstack 63912a9`: 471 unchanged, 64 forked and untouched, 38 excluded, nothing updated, merged, or conflicted. No denylist token was hit, and the sync needed no substitution rule and no further `tools/forks.json` change. The forked total is 2,034 lines, up two from his `setup-pstack/SKILL.md` edits. The upstream pin in `docs/reference.md` now names `63912a9`.
+
 ## 0.1.25 - merge pstack-claude 42fcb61, sync to upstream de8ee15 (v0.15.36)
 
 On GitHub Copilot, the `reflect` row of the [Copilot mapping](plugins/pstack/skills/poteto-mode/references/copilot-tools.md) now says that its transcript search takes the normal permission flow, because Copilot's session-state directory is outside the workspace and the hook approves only paths inside it. For contributors, `tools/validate-skills.mjs`, `tools/sync.mjs`, and `tools/generate.mjs` now run when their path crosses a symlink, such as a worktree under `/tmp` on macOS, where `node tools/validate-skills.mjs` used to print nothing and exit 0. The watcher's port-only test cases now live in `watch-pr/policy.port.test.ts` and `watch-pr/github.port.test.ts`, so a sync that touches upstream's `policy.test.ts` or `github.test.ts` no longer merges them again. No skill text changes.
