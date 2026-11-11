@@ -46,7 +46,7 @@ Invoke a skill by typing `$` and its name, such as `$poteto-mode` or `$babysit`,
 <details>
 <summary><strong>Pi</strong></summary>
 
-Run in your terminal:
+Run in your terminal, with Pi 1.5.1 or later:
 
 ```shell
 pi install git:github.com/rinti/pstack-rinti
