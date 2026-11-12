@@ -2,6 +2,21 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.28 - sync to upstream a5539b1 (v0.15.36): pin only
+
+Users get no change to any skill. pstack-claude has nothing new since `36f4336` (0.9.136), which 0.1.27 merged, so this release merges none of Michael's commits.
+
+The upstream pin moves from `5866df5` to `a5539b1`, still v0.15.36. The range has no pstack commits. Its six commits add `third_party/netsuite` and `third_party/front`, make the `third_party/gong` OAuth client optional, and update the cursor/plugins marketplace listing and README for them. No component of this port carries any of those paths:
+
+- `6e4ac01` feat(third_party): add the NetSuite plugin
+- `2eaf465` Merge pull request #1213 from djiang-jq/djiang/netsuite-plugin
+- `a7c7e46` feat(third_party): add the Front plugin
+- `0dda7b5` Merge pull request #1214 from djiang-jq/djiang/front-plugin
+- `930deb4` gong: make the OAuth client optional so Grok Bot can register its own
+- `a5539b1` Merge pull request #1216 from cursor/eliu/gong-optional-client
+
+Measured with `bun tools/sync.mjs pstack a5539b1`: 471 unchanged, 64 forked and untouched, 38 excluded, nothing updated, merged, or conflicted. No denylist token was hit, the sync needed no substitution rule and no `tools/forks.json` change, and this fork's Codex seats and converging review rounds are untouched. The forked total stays at 2,034 lines. The upstream pin in `docs/reference.md` now names `a5539b1`.
+
 ## 0.1.27 - merge pstack-claude 36f4336, sync to upstream 5866df5 (v0.15.36)
 
 poteto-mode now reads project playbooks from `~/.agents/playbooks/` as well as from the repository's `.agents/playbooks/`, so a playbook that extends a bundled one can apply in every repository without a copy in each. Home playbooks take the same frontmatter and changes, and when playbooks from both folders fit a task, the home folder's changes apply first. `check-playbooks.mjs` checks both folders and names a home playbook by its `~/.agents/playbooks/` path. In `worktree-audit.mjs`, the REMOTE column now shows a worktree that is behind its pushed branch as `behindN` and a diverged one as `aheadN,behindN`, where it printed `ahead0` or only the ahead count. Whether a worktree is safe is decided as before.
