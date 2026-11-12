@@ -2,6 +2,21 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.29 - merge pstack-claude f496834, sync to upstream ec56937 (v0.15.36)
+
+`check-playbooks.mjs` now reads a project playbook's frontmatter the way YAML does, where it matched the raw text and failed valid frontmatter with the wrong error. A quoted `extends: "bug-fix"` or a one-line flow list `extends: [bug-fix, feature]` used to report an unknown base. Blanks after an opening or closing `---`, or a closing `---` at the end of the file, used to report a missing `when:` line. The script now drops one pair of matching quotes from `when` and from each `extends` item, reads a one-line flow list, and accepts both delimiter forms. A quoted `"[bug-fix]"` stays one stem, as YAML reads it, and a `when` that is empty once unquoted fails as a missing `when:` line. The script still does not read a block list under `extends:` or a trailing `# comment`.
+
+This release merges pstack-claude through `f496834`, his release 0.9.137:
+
+- `f496834` Read quoted and flow-list frontmatter in check-playbooks (#455), taken whole, without its version number. It changes `plugins/pstack/skills/poteto-mode/scripts/check-playbooks.mjs` and `tests/check-playbooks.test.mjs`. The script is port-only and the test sits outside the skill tree, so neither needs a `tools/forks.json` entry. The merge conflicted only in `VERSION`, the version line of each manifest, and `CHANGES.md`, and each keeps this fork's `0.1.x` line.
+
+The upstream pin moves from `a5539b1` to `ec56937`, still v0.15.36. The range has no pstack commits. Its two commits add `third_party/paypal` and update the cursor/plugins marketplace listing and README for it. No component of this port carries any of those paths:
+
+- `57cfb2e` feat(third_party): add the PayPal plugin
+- `ec56937` Merge pull request #1217 from djiang-jq/djiang/paypal-plugin
+
+Measured with `bun tools/sync.mjs pstack ec56937`: 471 unchanged, 64 forked and untouched, 38 excluded, nothing updated, merged, or conflicted. No denylist token was hit, the sync needed no substitution rule and no `tools/forks.json` change, and this fork's Codex seats and converging review rounds are untouched. The forked total stays at 2,034 lines. The upstream pin in `docs/reference.md` now names `ec56937`.
+
 ## 0.1.28 - sync to upstream a5539b1 (v0.15.36): pin only
 
 Users get no change to any skill. pstack-claude has nothing new since `36f4336` (0.9.136), which 0.1.27 merged, so this release merges none of Michael's commits.
