@@ -2,6 +2,21 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.30 - merge pstack-claude 2044f18, sync to upstream 6e359ce (v0.15.36)
+
+Users get no change to any skill, script, or hook. This release moves both pins and nothing else.
+
+This release merges pstack-claude through `2044f18`, his release 0.9.138:
+
+- `2044f18` Release 0.9.138 (#457), taken for its ancestry only. It changes his version number in `VERSION` and each manifest and adds a `CHANGES.md` entry, and this fork keeps its own `0.1.x` line in all of them. His entry records the worktree audit's behind and diverged REMOTE counts from #453, which his 0.9.137 entry left out. This fork merged that change as `36f4336` in 0.1.27 and recorded it there, so nothing is missing here. The merge conflicted only in `VERSION`, the version line of each manifest, and `CHANGES.md`.
+
+The upstream pin moves from `ec56937` to `6e359ce`, still v0.15.36. The range has no pstack commits. Its two commits change one file, `third_party/rippling/.cursor-plugin/plugin.json`, which no component of this port carries:
+
+- `3534363` docs: link Rippling's MCP setup guide from the URL variable
+- `6e359ce` Merge pull request #1219 from djiang-jq/djiang/rippling-setup-link
+
+Measured with `bun tools/sync.mjs pstack 6e359ce`: 471 unchanged, 64 forked and untouched, 38 excluded, nothing updated, merged, or conflicted. No denylist token was hit, the sync needed no substitution rule and no `tools/forks.json` change, and this fork's Codex seats and converging review rounds are untouched. The forked total stays at 2,034 lines. The upstream pin in `docs/reference.md` now names `6e359ce`.
+
 ## 0.1.29 - merge pstack-claude f496834, sync to upstream ec56937 (v0.15.36)
 
 `check-playbooks.mjs` now reads a project playbook's frontmatter the way YAML does, where it matched the raw text and failed valid frontmatter with the wrong error. A quoted `extends: "bug-fix"` or a one-line flow list `extends: [bug-fix, feature]` used to report an unknown base. Blanks after an opening or closing `---`, or a closing `---` at the end of the file, used to report a missing `when:` line. The script now drops one pair of matching quotes from `when` and from each `extends` item, reads a one-line flow list, and accepts both delimiter forms. A quoted `"[bug-fix]"` stays one stem, as YAML reads it, and a `when` that is empty once unquoted fails as a missing `when:` line. The script still does not read a block list under `extends:` or a trailing `# comment`.
