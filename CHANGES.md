@@ -2,6 +2,25 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.31 - merge pstack-claude a12b047, sync to upstream 3dbd22f (v0.15.36)
+
+Users get no change to any skill, script, or hook. Contributors get a clearer test failure: when the copy of Pi in `plugins/` is not installed, `bun test` now names the missing install and the command that fixes it.
+
+This release merges pstack-claude through `a12b047`. He has cut no release since 0.9.138, which 0.1.30 merged:
+
+- `a12b047` test: name the install fix when the test copy of Pi is missing (#458), taken whole. It adds `tests/preflight.mjs` and loads it as a test preload in `bunfig.toml`. After only the root `bun install`, the tests that load the Pi extension failed with "Cannot find module '@earendil-works/pi-coding-agent'" and nothing named the cause. The preload now prints that the copy of Pi in `plugins/` is not installed and to run `bun install --frozen-lockfile --cwd plugins`, once before the first test and again after the last. It does not stop the run, so a job that loads no Pi test still passes. Both files sit outside the skill tree, so neither needs a `tools/forks.json` entry. The merge had no conflict.
+
+The upstream pin moves from `6e359ce` to `3dbd22f`, still v0.15.36. The range has no pstack commits. Its six commits add `third_party/engine`, `third_party/squarespace`, and `third_party/runta`, and update the cursor/plugins marketplace listing and README for them. No component of this port carries any of those paths:
+
+- `e98cb1b` feat(third_party): add the Engine plugin
+- `24621db` Merge pull request #1223 from cursor/add-engine-plugin
+- `c427fa1` feat(third_party): add the Squarespace plugin
+- `05b4917` Merge pull request #1227 from djiang-jq/djiang/squarespace-plugin
+- `1b1ed88` feat(third_party): add the Runta plugin
+- `3dbd22f` Merge pull request #1229 from cursor/add-runta-plugin
+
+Measured with `bun tools/sync.mjs pstack 3dbd22f`: 471 unchanged, 64 forked and untouched, 38 excluded, nothing updated, merged, or conflicted. No denylist token was hit, the sync needed no substitution rule and no `tools/forks.json` change, and this fork's Codex seats and converging review rounds are untouched. The forked total stays at 2,034 lines. The upstream pin in `docs/reference.md` now names `3dbd22f`.
+
 ## 0.1.30 - merge pstack-claude 2044f18, sync to upstream 6e359ce (v0.15.36)
 
 Users get no change to any skill, script, or hook. This release moves both pins and nothing else.
