@@ -88,10 +88,10 @@ Affected skill entry points point here. Most skills need only the tables above. 
 | `automate-me` | The skill-authoring guidance resolves through the skills table above. The workspace's transcripts are its Muse sessions (see Tool actions), and the mode skill lands in the Muse user skills directory or `.agents/skills/`. |
 | `architect` | The runner panel goes through the **arena** skill, so its fan-out and model substitution apply here too. |
 | `arena` | The parallel candidates and the cross-judge are Workflow children or `subagent_spawn` calls on the configured Muse models (see Model names). |
-| `how` | The parallel explorers and the explainer map to `subagent_spawn` fan-out; substitute your configured Muse models. |
+| `how` | The explaining subagent maps to one `subagent_spawn` call. |
 | `reflect` | The three reviewers and the synthesizer map to `subagent_spawn` fan-out. The transcript finder reads Claude Code's layout, so pass the session digest step 1 allows instead. |
 | `swarm` | Each worker is a `subagent_spawn` call or a Workflow child; give each writing worker worktree isolation or its own output directory (see Subagent policy). |
-| `why` | The parallel investigators and the synthesizer map to `subagent_spawn` fan-out; substitute your configured Muse models. List MCP servers from the tools Muse exposes to the session, not from Claude Code's MCP files. |
+| `why` | For sources beyond the commits and PR discussions, list MCP servers from the tools Muse exposes to the session, not from Claude Code's MCP files. |
 | `typescript-best-practices` | Its frontmatter `paths` scoping is Claude Code metadata on Muse; invoke it by name for TypeScript work. |
 | `recall` | Search this workspace's Muse sessions (see Tool actions), not Claude Code's projects directory. |
 | `show-me-your-work` | Check the log against this run's Muse session file (see Tool actions), not a Claude Code transcript. |

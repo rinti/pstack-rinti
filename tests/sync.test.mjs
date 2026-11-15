@@ -172,11 +172,6 @@ describe("applySubstitutions", () => {
       "Once all explorers have returned, spawn one `Agent` subagent to synthesize their findings into one explanation:",
     ],
     [
-      "skills/how/SKILL.md",
-      "- `model`: the `how explorer` line, default `grok-4.7-xhigh-fast`",
-      "- `model`: the `how explorer` line, default in [Models](#models)",
-    ],
-    [
       "skills/architect/SKILL.md",
       "Take the runners from the `architect runners` line in the `pstack-models.mdc` rule, in place of the `arena runners` line. If the rule or that line is missing, use",
       "Take the runners from the `architect runners` line in `pstack-models.md`, in place of the `arena runners` line. If the sheet or that line is missing, use",

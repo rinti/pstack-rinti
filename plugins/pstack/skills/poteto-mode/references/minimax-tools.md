@@ -41,7 +41,7 @@ poteto-mode's Subagents section sets Claude-specific defaults (`subagent_type: "
 
 Skills name Claude Code model aliases in their Models sections. Those aliases are not MiniMax Code model keys. MiniMax Code names a model `<provider>/<model>`, and the models a session can reach depend on the providers the user connected: MiniMax itself, OpenAI through its Codex sign-in, or a provider added with `mcode provider add`. So the MiniMax Code build ships no default models, and the user picks them once.
 
-- The model sheet is `~/.minimax/pstack-models.md`. Before a skill that needs a role model (`architect`, `arena`, `how`, `interrogate`, `no-comments`, `poteto-mode`, `reflect`, `swarm`, `thermos`, `why`), read it. With no sheet, load `setup-pstack` with the `skill` tool and finish it first.
+- The model sheet is `~/.minimax/pstack-models.md`. Before a skill that needs a role model (`architect`, `arena`, `interrogate`, `no-comments`, `poteto-mode`, `reflect`, `swarm`, `thermos`), read it. With no sheet, load `setup-pstack` with the `skill` tool and finish it first.
 - A role line in the sheet is the user's explicit model instruction, so pass it as the `task` tool's `model`. Pass the role's `@level`, or the sheet's `default effort`, as `effort`. The `task` tool fails a model other than the parent's that offers effort levels when `effort` is missing or names a level the model does not offer, such as `high` on MiniMax M3, which offers only `on` and `off`. When the level is not one the model offers, ask the user which to use. `inherit-parent` or `auto` omits `model` and `effort`.
 - Roles that default to the worker model (`feature, refactoring`): the worker model the user chose.
 - Roles that default to the strongest model (`strongest judgment`): the strongest model the user chose.
@@ -78,7 +78,7 @@ Most skills need only the tables above. These need one more mapping:
 | `no-comments` | The `comment-sicko` dispatch is a `task` call with `agent_name: "pstack:comment-sicko"`. |
 | `thermos` | Both review dispatches are `task` calls with the agents' `pstack:` names. |
 | `swarm` | Each worker is a `task` call. Give each writing worker its own worktree first (see Subagent policy). |
-| `why` | The parallel investigators and the synthesizer map to `task` fan-out. List MCP servers with `tool_search`, not from Claude Code's MCP files. |
+| `why` | For sources beyond the commits and PR discussions, list MCP servers with `tool_search`, not from Claude Code's MCP files. |
 | `recall` | Do not list or read `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/projects/`; it holds Claude Code history, not this session's (see Tool actions). Work from live state and the shared record. |
 | `reflect` | The transcript finder reads Claude Code's layout and has no MiniMax Code location to read, so pass the session digest step 1 allows instead. |
 | `show-me-your-work` | Check the log against this session's own context, not a Claude Code transcript. |

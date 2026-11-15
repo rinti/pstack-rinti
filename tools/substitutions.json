@@ -117,11 +117,6 @@
       "rationale": "the Claude plugin directory validator reads a backticked eval as a shell execute pattern and holds the submission (0.9.46, #108)"
     },
     {
-      "pattern": "list the available MCPs from the Cursor environment. Use the available-tools map when present. Otherwise inspect the `mcps/` directory Cursor exposes for enabled MCP servers.",
-      "replacement": "list the available MCPs in the Claude Code environment. Use the tool list at the top of the system prompt (every MCP appears as a tool with prefix `mcp__<server>__<name>`). Otherwise read `.mcp.json` in the plugin/project, or run `claude mcp list`.",
-      "rationale": "where Claude Code exposes its MCP servers"
-    },
-    {
       "regex": "default to one each on `(?:claude|gpt|grok|gemini|composer)-[^`]+`(?:(?:,| and|, and) `(?:claude|gpt|grok|gemini|composer)-[^`]+`)*\\.",
       "files": "^skills/arena/SKILL\\.md$",
       "replacement": "run one each on the defaults in [Models](#models).",
@@ -134,10 +129,28 @@
       "rationale": "the cross-judge pool defaults to the stamped runners"
     },
     {
-      "regex": " With the default pool, a Claude parent gets `(?:claude|gpt|grok|gemini|composer)-[^`]+`\\. A parent from any other family gets `(?:claude|gpt|grok|gemini|composer)-[^`]+` first\\.",
+      "regex": " With the default pool, a Claude parent gets `(?:claude|gpt|grok|gemini|composer)-[^`]+`\\. A parent from any other (?:family|vendor) gets `(?:claude|gpt|grok|gemini|composer)-[^`]+` first(?:, then `(?:claude|gpt|grok|gemini|composer)-[^`]+`)?\\.",
       "files": "^skills/arena/SKILL\\.md$",
       "replacement": "",
       "rationale": "the stamped defaults hold one Claude Code family per model name, so pool order already picks the first default from another family"
+    },
+    {
+      "pattern": "The judge is never from the parent's vendor. A vendor is a family as Phase A step 3 defines families, except that `claude-fable-*` and `claude-*` are one vendor.",
+      "files": "^skills/arena/SKILL\\.md$",
+      "replacement": "The judge is never from the parent's family, as Phase A step 3 defines families.",
+      "rationale": "upstream now keeps the cross-judge off the parent's vendor, and a Claude Code session spawns one vendor's models through the `Agent` tool, so a vendor rule would leave the default pool with no judge; the port keeps the judge on another model family"
+    },
+    {
+      "regex": "\\bvendor\\b",
+      "files": "^skills/arena/SKILL\\.md$",
+      "replacement": "family",
+      "rationale": "same paragraph: the rest of the cross-judge rule reads by family; must follow the longer vendor sentence above"
+    },
+    {
+      "pattern": "A family's default is its entry in the default list above.",
+      "files": "^skills/arena/SKILL\\.md$",
+      "replacement": "A family's default is its entry in those defaults.",
+      "rationale": "the port's default list is the stamped Models section below the step, not a slug list above it"
     },
     {
       "regex": "use `(?:claude|gpt|grok|gemini|composer)-[^`]+`(?:(?:,| and|, and) `(?:claude|gpt|grok|gemini|composer)-[^`]+`)*\\.",
@@ -274,22 +287,22 @@
       "rationale": "same rule for a skill body, which carries its own Models section"
     },
     {
-      "regex": ", default `(?:claude|gpt|grok|gemini|composer)-[^`]+`",
-      "files": "/SKILL\\.md$",
-      "replacement": ", default in [Models](#models)",
-      "rationale": "a role bullet's default model is stamped into the skill's Models section, never hard-coded in prose"
-    },
-    {
-      "regex": "Defaults `(?:claude|gpt|grok|gemini|composer)-[^`]+` for code, `(?:claude|gpt|grok|gemini|composer)-[^`]+` for prose and judgment",
+      "regex": "Defaults `(?:claude|gpt|grok|gemini|composer)-[^`]+` for code, (?:`(?:claude|gpt|grok|gemini|composer)-[^`]+` for prose and judgment|prose, and judgment)",
       "files": "^skills/poteto-mode/SKILL\\.md$",
       "replacement": "Role defaults in [Models](#models), with \"judgment and prose\" covering prose and judgment",
       "rationale": "the delegate defaults are stamped into poteto-mode's Models section, so an upstream model bump on this line is not a change to the port"
     },
     {
-      "regex": "strongest judgment model \\(`(?:claude|gpt|grok|gemini|composer)-[^`]+`\\)",
+      "regex": "Review and design panels default to one runner each on `(?:claude|gpt|grok|gemini|composer)-[^`]+`(?:(?:,| and|, and) `(?:claude|gpt|grok|gemini|composer)-[^`]+`)*\\.",
       "files": "^skills/poteto-mode/SKILL\\.md$",
-      "replacement": "strongest-judgment model (default in [Models](#models))",
-      "rationale": "same line, the strongest-judgment default"
+      "replacement": "Review and design panels default to one runner each on the defaults in each panel skill's Models section (`arena`, `architect`, `interrogate`).",
+      "rationale": "same line, the panel defaults, which are stamped into each panel skill's Models section"
+    },
+    {
+      "pattern": " If the rule has no `# defaults: 2` line, an older setup wrote it. Keep honoring its lines, and tell the user once per session to rerun `/setup-pstack`.",
+      "files": "^skills/poteto-mode/SKILL\\.md$",
+      "replacement": "",
+      "rationale": "the marker flags a Cursor rule that still holds upstream's old default slugs; the port's defaults in models.json did not change, so its sheet has no marker and no stale default to replace"
     },
     {
       "pattern": "omit Task `model`",
@@ -301,6 +314,18 @@
       "files": "^skills/reflect/SKILL\\.md$",
       "replacement": " | default in [Models](#models) | `references/",
       "rationale": "a reviewer row's default model is stamped into reflect's Models section, so an upstream model bump in the table is not a change to the port"
+    },
+    {
+      "regex": "\\n\\nA rule without the `# defaults: 2` line comes from an older setup\\.[\\s\\S]*?Tell the user which values you replaced\\.",
+      "files": "^skills/setup-pstack/SKILL\\.md$",
+      "replacement": "",
+      "rationale": "the block replaces upstream's old default slugs in a Cursor rule written before its default models changed; the port's defaults in models.json did not change, so its sheet has nothing to migrate beyond the retired role lines the paragraph above drops"
+    },
+    {
+      "pattern": "from a vendor other than the parent's, in list order, so order it by preference. Fable and the other Claude models are one vendor.",
+      "files": "^skills/setup-pstack/SKILL\\.md$",
+      "replacement": "from a family other than the parent's, in list order, so order it by preference.",
+      "rationale": "the port's cross-judge rule reads by model family, as the arena rules above translate it"
     },
     {
       "regex": "(?:claude|gpt|grok|gemini|composer)-[0-9a-z.]+(?:-[0-9a-z.]+)+(?<!\\.)",
@@ -329,7 +354,7 @@
       "rationale": "same sentence, the other wording upstream uses"
     },
     {
-      "regex": "Families go by prefix: `[a-z-]+-\\*`(?:(?:,| and|, and| with) `[a-z-]+-\\*`)*\\.",
+      "regex": "Families go by prefix(?:, and the longest matching prefix wins)?: `[a-z-]+-\\*`(?:(?:,| and|, and| with) `[a-z-]+-\\*`)*\\.(?: Drop a leading `cursor-` before you compare\\. Any other slug's family is its text before the first hyphen\\.)?",
       "replacement": "Families go by model name, such as Opus, Fable, or Sonnet.",
       "rationale": "Claude Code names models by family, not by slug prefix"
     },
@@ -419,20 +444,21 @@
       "rationale": "the port routes any automated PR-review bot, not only Cursor's Bugbot"
     },
     {
-      "regex": " A refused `composer-\\*` entry runs on (?:`[^`]+`|Reviewer B's default)\\.",
-      "replacement": "",
-      "rationale": "Claude Code has no composer models, so the fallback for one has nothing to say"
-    },
-    {
       "pattern": "reasoning level and fast or standard speed for the job",
       "replacement": "reasoning level for the job",
       "rationale": "Claude Code sets fast mode for the session, not per spawn, so a spawn picks only its effort"
     },
     {
-      "pattern": "pick the reasoning level and speed the job needs. The `/setup-pstack` budget sets each role's starting level, xhigh by default.",
+      "regex": "pick the reasoning level and speed the job needs\\. The `/setup-pstack` budget sets each role's starting level, xhigh(?: or high)? by default(?:, and max for `hardest tasks`)?\\.",
       "files": "^skills/poteto-mode/SKILL\\.md$",
       "replacement": "pick the reasoning level the job needs, set as [Reasoning effort](#reasoning-effort) describes. The role's `@level`, or the sheet's `default effort` line, sets its starting level, and `session` starts from the session's level.",
       "rationale": "the port's per-spawn effort lever is the override sheet's @level and the Agent call's effort parameter, not a slug suffix"
+    },
+    {
+      "pattern": "`hardest tasks`",
+      "files": "^skills/poteto-mode/SKILL\\.md$",
+      "replacement": "`strongest judgment`",
+      "rationale": "the port's models.json and override sheet name this role `strongest judgment`; must follow the starting-level rule above, which matches the upstream name"
     },
     {
       "pattern": "Use fast mode only when the job is urgent, meaning CI or trunk is red or a person is blocked on the result right now. Otherwise use standard speed, the same slug without `-fast`.",
@@ -453,10 +479,22 @@
       "rationale": "Claude Code has no per-spawn fast slug"
     },
     {
+      "pattern": " Fable (`claude-fable-*`) is its own family, apart from the other Claude models.",
+      "files": "^skills/poteto-mode/SKILL\\.md$",
+      "replacement": "",
+      "rationale": "Claude Code names each model by family, so Fable is already a model of its own and the sentence before keeps the model the role names"
+    },
+    {
       "pattern": "If the family has no slug at that level and speed, use its nearest slug.",
       "files": "^skills/poteto-mode/SKILL\\.md$",
       "replacement": "If the model does not take that level, use its nearest level.",
       "rationale": "on Claude Code the effort is a level on the dispatch, not a slug"
+    },
+    {
+      "regex": " Gemini has no xhigh, max, or fast slug, so a Gemini subagent runs at high, such as `[^`]+`, whenever the job calls for high or above\\. Fable [0-9.]+ has no fast slug, so an urgent Fable [0-9.]+ subagent runs at standard speed and keeps its level\\.",
+      "files": "^skills/poteto-mode/SKILL\\.md$",
+      "replacement": "",
+      "rationale": "Claude Code spawns no Gemini model and has no per-spawn fast slug, and the sentence before already sends a model to its nearest level"
     },
     {
       "pattern": "rejects the adjusted slug, do not try another adjusted slug.",
@@ -529,6 +567,12 @@
       "pattern": "a `/visualize` chart for numbers",
       "replacement": "a chart rendered from the data for numbers",
       "rationale": "/visualize is a Cursor command with no Claude Code equivalent"
+    },
+    {
+      "pattern": "in agent mode because readonly strips MCP access",
+      "files": "^skills/recall/SKILL\\.md$",
+      "replacement": "with full tool access because a read-only subagent type strips MCP access",
+      "rationale": "Claude Code has no agent mode; a subagent keeps MCP access through a subagent_type with full tool access"
     }
   ],
   "denylist": [
@@ -539,6 +583,14 @@
     {
       "token": "Project store",
       "hint": "Cursor's Project store; the port keeps program state under ~/.claude/orchestrate/<slug>/, so add a substitution rule for the phrase"
+    },
+    {
+      "token": "composer-",
+      "hint": "Cursor model slug; Claude Code has no composer models, so drop the sentence or point at the Models section with a substitution rule"
+    },
+    {
+      "token": "`mcps/` directory",
+      "hint": "where Cursor lists MCP servers; on Claude Code they are the `mcp__<server>__<name>` tools, `.mcp.json`, or `claude mcp list`, so add a substitution rule for the sentence"
     },
     {
       "token": "grok-",

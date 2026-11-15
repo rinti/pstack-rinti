@@ -2,6 +2,51 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.32 - sync to upstream bf0c7cd (v0.15.42)
+
+Users get a much shorter `/how` and `/why`. `/how` now spawns one read-only subagent that explores and explains in one pass. `/why` is one paragraph: answer from the commits and PR discussions, cite what the authors wrote, mark inferences, and say what the record does not answer. The playbooks no longer route through `how`; they say to trace the code. `/sharpen` asks the agent to prototype any choice an experiment can settle, statechart draws fixes from upstream, and the override sheet loses four roles: `how explorer`, `how explainer`, `why investigators`, and `why synthesizer`. A sheet that still has those lines stays valid, every reader ignores them, and the next `/setup-pstack` run drops them.
+
+This release merges nothing from pstack-claude. He has no commit after `a12b047`, which 0.1.31 merged.
+
+The upstream pin moves from `3dbd22f` (v0.15.36) to `bf0c7cd` (v0.15.42). The range has one commit:
+
+- `bf0c7cd` feat(pstack): new default models, one-file why and how, statechart fixes, sharpen and reflect text (#1236)
+
+Measured with `bun tools/sync.mjs pstack bf0c7cd`: 448 unchanged, 38 excluded, 13 updated, 8 merged, 1 added, 10 deleted, 8 conflicted. The forked total goes from 2,034 lines in 64 files to 2,000 lines in 61 files. The upstream pin in `docs/reference.md` now names `bf0c7cd`.
+
+What this fork did not take:
+
+- Upstream's new default models. Its defaults are Cursor slugs, and the port's defaults live in `plugins/pstack/models.json`, which this release changes only by removing the four retired roles.
+- The vendor rule for Arena's cross-judge. Upstream now keeps the judge off the parent's vendor and counts Fable and the other Claude models as one vendor. On Claude Code the `Agent` tool spawns one vendor's models, so that rule leaves the default pool with no judge. The port keeps the judge on another model family, as before. A pool with `codex:<model>` seats could follow the vendor rule; that is a choice for a later release.
+- The `# defaults: 2` marker and its migration in `/setup-pstack` and `/poteto-mode`. It replaces upstream's old default slugs in a Cursor rule. The port's defaults did not change, so its sheet has nothing to migrate.
+- Upstream's `swarm workers` model for trivial mechanical edits in the Subagents section of `/poteto-mode`. `swarm workers` defaults to `opus` in the port, so the fork keeps those edits on the worker model. The fork's `why` in `tools/forks.json` names this.
+
+Conflicts, and what each kept:
+
+- `skills/arena/SKILL.md`: the Codex seats sentence stays, with upstream's new sentence on a family's default.
+- `skills/no-comments/SKILL.md`: the fork's model line, HOLD rule, and second-report rule stay, with upstream's "trace their symbol or run `/why` on it".
+- `skills/poteto-help/SKILL.md`: the fork's text stays. Upstream reworded a paragraph that pstack-claude's fork had already removed.
+- `skills/poteto-mode/SKILL.md`: upstream's Subagents paragraph without `how` and `why` in the routed skills, with the fork's full tool access, Models pointers, and worker-model sentence. Upstream's sentence on panel defaults replaces the fork's "Multi-model panels" sentence.
+- `skills/poteto-mode/playbooks/multi-phase-plan.md`: upstream dropped `skills/how/SKILL.md` from the appendix placeholder, and the fork's installed-plugin paths stay.
+- `skills/recall/SKILL.md`: upstream's one investigator per source in step 4, with the fork's standing-rules sweep and human-rulings step.
+- `skills/setup-pstack/SKILL.md`: the fork's steps stay, and the retired-role example now names `how explorer` and `why investigators`.
+- `skills/statechart/scripts/test/cli.test.ts`: both imports stay, the fork's `childEnv` and upstream's new `drawn`.
+
+Files upstream deleted, and what became of the fork's text in them:
+
+- `skills/how/references/explorer-prompt.md`, `skills/why/references/source-playbook.md`, and the eight files under `skills/why/references/sources/` had no fork and are gone.
+- `skills/how/references/explainer-prompt.md` is gone. Its fork told a lone explainer to trace the code itself, and upstream's one-pass subagent now does that.
+- `skills/why/references/investigator-prompt.md` and `skills/why/references/synthesizer-prompt.md` are gone. Each carried a fork step that applied the human-rulings epistemics. That rule moves to one sentence at the end of `skills/why/SKILL.md`, a new fork. The synthesizer's link-validator URL went with its file.
+- `skills/why/references/epistemics.md` is now port-only. It keeps the Claims about human decisions section, which `/recall`, the session-pickup playbook, and now `/why` cite. Upstream's own sections in it are gone, as upstream deleted them.
+
+Port text that follows the new shape: the `how` and `why` rows in each runtime's platform mapping describe one subagent for `how` and none for `why`. The focused-fix exception in the bug-fix playbook and in `/poteto-mode` names `why` alone, since upstream took `how` out of the bug-fix steps. comment-sicko says that `/how` reads the code and `/why` reads the record. `README.md` and the `/why` row in `docs/reference.md` match.
+
+Substitution rules. Four slug rules widen to match upstream's new wording: the default-pool sentence in Arena, "Families go by prefix", "Defaults ... for code", and the reasoning-level sentence that now names `hardest tasks`. New rules translate the vendor sentences in Arena and `/setup-pstack` to families, point Arena's "default list above" and the panel defaults in `/poteto-mode` at the stamped Models sections, rename `hardest tasks` to `strongest judgment`, remove the `# defaults: 2` text, remove the Gemini and Fable slug notes and the "Fable is its own family" sentence, and rewrite "in agent mode because readonly strips MCP access" in `/recall` to "with full tool access because a read-only subagent type strips MCP access". Four rules matched nothing upstream any more and are deleted: the Cursor MCP listing sentence, the role bullet default, the strongest-judgment slug, and the refused `composer-*` entry. The denylist gains `composer-` and the `mcps/` directory, so the two sentences without a slug fail a sync if upstream brings them back.
+
+`tools/forks.json`: the entries for the four `how` and `why` reference files are deleted, `skills/why/SKILL.md` is added, and the `why` of `skills/poteto-mode/SKILL.md` names the worker-model sentence and the narrower focused-fix exception. This fork's Codex seats and converging review rounds are untouched.
+
+Tests that used a retired role as a fixture now use `swarm workers`, and the sync test case for the deleted role-bullet rule is gone.
+
 ## 0.1.31 - merge pstack-claude a12b047, sync to upstream 3dbd22f (v0.15.36)
 
 Users get no change to any skill, script, or hook. Contributors get a clearer test failure: when the copy of Pi in `plugins/` is not installed, `bun test` now names the missing install and the command that fixes it.
