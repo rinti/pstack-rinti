@@ -2,6 +2,62 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.33 - sync to upstream e1cc031 (v0.15.43)
+
+Users get much shorter skills. `/architect` is two paragraphs: trace what the change touches, sketch two shapes, pick the one with one owner per piece of state, and run `/arena` for a large or contested design. `/reflect` reads the transcript in the session and presents accepted, rejected, and backlog findings; it no longer spawns three reviewers and a synthesizer. `/unslop`, `/technical-writing`, the principle skills, and the Non-negotiables, Subagents, and reply sections of `/poteto-mode` say the same things in fewer words, and the playbook list is a line of names. Every subagent kickoff now opens with `Read <path>/worker.md before anything else.`, and the new `skills/poteto-mode/worker.md` holds the operator's standing rules for a worker: the bar in the kickoff is the whole bar, no question tools, PRs open ready for review, and the PR title and body shape. The Orchestrate playbook is gone. The Multi-phase plan playbook is five steps with no plan skeleton, so its checker `check-plan.mjs` is gone too. The override sheet loses three roles: `architect runners`, `reflect tooling`, and `reflect judgment, divergent, synthesizer`. A sheet that still has those lines stays valid, every reader ignores them, and the next `/setup-pstack` run drops them.
+
+This release merges nothing from pstack-claude. He has no commit after `a12b047`, which 0.1.31 merged.
+
+The upstream pin moves from `bf0c7cd` (v0.15.42) to `e1cc031` (v0.15.43). The range has one commit:
+
+- `2f87c85` feat(pstack): shorter skill texts, worker.md, and Opus-first routing capped at xhigh (#1249)
+
+Measured with `bun tools/sync.mjs pstack e1cc031`: 437 unchanged, 38 excluded, 17 updated, 2 merged, 1 added, 7 deleted, 17 conflicted. The forked total goes from 2,000 lines in 61 files to 1,871 lines in 57 files. The upstream pin in `docs/reference.md` now names `e1cc031`.
+
+What this fork did not take:
+
+- Upstream's default models and the pinned model in `poteto-agent`. Its defaults are Cursor slugs. The port's defaults live in `plugins/pstack/models.json`, which this release changes only by removing the three retired roles, and a port agent with no `model` runs on its parent's model.
+- The `# defaults: 3` marker, its migration, and the three-budget step in `/setup-pstack`. The port's sheet has no marker to migrate and sets effort through `default effort` and a per-role `@level`.
+- The hard xhigh cap on sheet values. Upstream writes no value above xhigh. In the port a sheet may still name `max` for a role, and `/poteto-mode` now says that no spawn raises a role above xhigh and that a role runs at max only where the sheet names it.
+- Upstream's fast-slug and Gemini sentences in the Subagents section. Claude Code sets fast mode for the whole session, so a spawn changes only its effort.
+- Upstream's `swarm workers` model for trivial mechanical edits, as in 0.1.32. The fork keeps those edits on the worker model.
+- The vendor rule for Arena's cross-judge, as in 0.1.32. The port keeps the judge on another model family.
+
+Forks of pstack-claude that could not coexist with upstream's new text, where upstream's text stands:
+
+- `skills/architect/SKILL.md` and `skills/architect/references/rationale-template.md`. The fork required comparing accepted deviations with the saved sketch and rationale before each implementation unit closes. Upstream's skill no longer saves a sketch or a rationale, and it deleted the template, so the rule has nothing to attach to.
+- `skills/poteto-mode/playbooks/multi-phase-plan.md`, `skills/poteto-mode/scripts/check-plan.mjs`, and `skills/poteto-mode/scripts/check-plan.test.ts`. The forks adapted the plan skeleton and its checker to the port. Upstream deleted the skeleton and the checker, so the playbook now equals upstream's and the port's `tests/check-plan.test.mjs` is gone with the checker.
+
+Conflicts, and what each kept:
+
+- `skills/arena/SKILL.md`: upstream's shorter runner step, with the Codex seats sentence and the port's families by model name. Upstream's own edit removed the long fallback for a rejected slug and the rule for refilling dropped seats. The Codex seats section no longer names `architect runners`. Upstream retired that line, and `/architect` now sends a large design to `/arena`, which reads `arena runners`, so a Codex seat listed there still runs.
+- `skills/poteto-help/SKILL.md`: the fork's text stays, without the sentence on `skip: <reason>` steps, which upstream deleted, and with one line saying that pstack has no orchestrate skill.
+- `skills/poteto-mode/SKILL.md`: upstream's new shape for the Non-negotiables triggers, Subagents, the reply section, and the playbook list. The fork's Platform Adaptation section, focused-fix exception, deploy-platform and defect-severity triggers, namespaced agent name, worker-model sentence, stop-the-abandoned-agent rule, closed-review-gate rule, prose rendering of reply items, merge-ready description of the two autopilots, project playbooks paragraph, and tautological-test sentence all stay. The per-playbook descriptions in the old list went with upstream's edit.
+- `skills/poteto-mode/playbooks/autopilot-full.md`: the fork's objective in `notes.md`, program size, and hand-off at merge-ready stay, with upstream's sentence on the owner rebasing its own branch.
+- `skills/poteto-mode/playbooks/autopilot-stack.md`: the fork's restack safety stays. The pointer to "Size and stacks" now names the playbook, since upstream removed that heading.
+- `skills/poteto-mode/playbooks/babysit.md`: upstream's six bullets, with the fork's first-read check, merge frontier, behind-base routing, and this fork's bug-class and pre-existing sentences.
+- `skills/poteto-mode/playbooks/feature.md`: the fork's worktree per delegate stays. "Comments per **Comments**" is gone, since upstream removed that section.
+- `skills/poteto-mode/playbooks/opening-a-pr.md`: upstream's three paragraphs, with the fork's stop-live-agents rule and this fork's `## Revert` heading.
+- `skills/poteto-mode/playbooks/shipping.md`: the fork's text stays whole, including `--match-head-commit` and the stop at merge-ready. The watcher sentence in step 5 follows upstream's shorter wording and keeps `--stack-prs`.
+- `skills/poteto-mode/scripts/package.json`: the fork's typecheck through the root `tsconfig.json` stays, and `test` drops `check-plan.test.ts`.
+- `skills/principle-build-the-lever/SKILL.md`: upstream's bullets, with the fork's comparison-tool controls as one bullet.
+- `skills/principle-prove-it-works/SKILL.md`: upstream's shape, with the fork's three paragraphs on the success report, the process, and the predicted failure.
+- `skills/principle-test-behavior-not-implementation/SKILL.md`: upstream's bullets, with this fork's watch-it-go-red rule and the constant-pin sentence.
+- `skills/reflect/SKILL.md`: upstream's text. The fork's transcript finder stays as one paragraph for a session that was compacted. The two rules that kept the parent's conclusions out of the reviewer prompts are gone, since there are no reviewer prompts.
+- `skills/setup-pstack/SKILL.md`: the fork's steps stay. The retired-role example names `architect runners`, `reflect tooling`, and `why investigators`, and the panel roles and the Codex seat offer no longer name `architect runners`.
+
+Files upstream deleted, and what became of the fork's text in them: `skills/architect/references/design-red-flags.md`, `skills/architect/references/runner-prompt.md`, and the four reviewer prompts under `skills/reflect/references/` had no fork and are gone. `skills/poteto-mode/playbooks/orchestrate.md` is gone with its four substitution rules; the store path `~/.claude/orchestrate/<slug>/` stays, because Autopilot-full still writes there.
+
+New fork: `skills/poteto-mode/worker.md` adds `Revert` to the worker's PR body headings, so a subagent's PR matches the Opening a PR playbook.
+
+Port text that follows the new shape: the per-skill notes in each runtime's platform mapping lose the `architect` row, and the `reflect` row describes reading the transcript in the session. The mappings and `docs/pi-equivalence.md` no longer name the Orchestrate playbook, and the scratchpad row of the Pi table is gone with that playbook, the one place that mentioned a scratchpad. The driver-skill line is stamped on three playbooks, not five. `NOTICE.md`, `CONTRIBUTING.md`, the CI workflow, the Copilot script contracts, and `docs/reference.md` drop the deleted files.
+
+Substitution rules. Nineteen new rules: one strips the `model` line from upstream's agents, one removes "and spawn `generalPurpose`, because `poteto-agent` defaults to Opus", two point Arena's default runners at the stamped Models section and keep its judge off the parent's family, three rewrite `/poteto-help` and `/poteto-mode` lines that name `cursor-team-kit` skills to the port's `deslop` skill and driver line, one sets the Eval playbook's grader to "its role's model at `medium` effort", and eleven translate the new Subagents text of `/poteto-mode`: the kickoff trigger without Project workers, full tool access, the three default bullets, the `strongest judgment` exception, the starting level under `default effort` and `session`, the xhigh ceiling for spawns, whole-session fast mode, verification on the `swarm workers` model, no Gemini sentence, and a second opinion on a different model. "Families go by prefix" widens to upstream's new sentence, and the watcher-path, `# defaults` marker, and setup-block rules follow upstream's wording. Thirty-four rules matched nothing upstream any more and are deleted, among them the old slug rules for Arena, Architect, Reflect, and `/poteto-mode`, the `hardest tasks` rename, and the Orchestrate rules.
+
+`tools/forks.json`: the entries for `architect/SKILL.md`, `architect/references/rationale-template.md`, `poteto-mode/playbooks/multi-phase-plan.md`, `poteto-mode/scripts/check-plan.mjs`, and `poteto-mode/scripts/check-plan.test.ts` are deleted, and `poteto-mode/worker.md` is added. The `why` of `arena/SKILL.md` and `setup-pstack/SKILL.md` no longer names `architect runners`, the `why` of `reflect/SKILL.md` describes the finder paragraph, and the `why` of `poteto-mode/SKILL.md` drops what the substitution rules now carry. This fork's Codex seats, converging review rounds, bug-class and pre-existing rules, `## Revert` section, and tautological-test rules are untouched.
+
+Tests: the two pins on Reflect's reviewer prompts are gone with the prompts, the fixtures that used a retired role use `judgment and prose` and `arena runners`, the sync test cases for deleted rules are gone, and the plugin-path case in the pre-tool-use hook test names `check-playbooks.mjs`.
+
 ## 0.1.32 - sync to upstream bf0c7cd (v0.15.42)
 
 Users get a much shorter `/how` and `/why`. `/how` now spawns one read-only subagent that explores and explains in one pass. `/why` is one paragraph: answer from the commits and PR discussions, cite what the authors wrote, mark inferences, and say what the record does not answer. The playbooks no longer route through `how`; they say to trace the code. `/sharpen` asks the agent to prototype any choice an experiment can settle, statechart draws fixes from upstream, and the override sheet loses four roles: `how explorer`, `how explainer`, `why investigators`, and `why synthesizer`. A sheet that still has those lines stays valid, every reader ignores them, and the next `/setup-pstack` run drops them.

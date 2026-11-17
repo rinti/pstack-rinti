@@ -6,21 +6,9 @@
       "since": "0.9.106",
       "upstream": "not-proposed"
     },
-    "plugins/pstack/skills/architect/SKILL.md": {
-      "kind": "policy",
-      "why": "Requires comparing accepted deviations with the saved sketch and rationale, and updating them, before each implementation unit closes.",
-      "since": "0.9.34",
-      "upstream": "not-proposed"
-    },
-    "plugins/pstack/skills/architect/references/rationale-template.md": {
-      "kind": "policy",
-      "why": "Adds an Implementation reconciliation section that records accepted deviations and their acceptance sources.",
-      "since": "0.9.34",
-      "upstream": "not-proposed"
-    },
     "plugins/pstack/skills/arena/SKILL.md": {
       "kind": "port-feature",
-      "why": "pstack-rinti: Lets a codex:<model> entry in the arena runners, architect runners, or arena cross-judge pool line run that seat through the Codex CLI from Claude Code.",
+      "why": "pstack-rinti: Lets a codex:<model> entry in the arena runners or arena cross-judge pool line run that seat through the Codex CLI from Claude Code.",
       "since": "0.1.0",
       "upstream": "not-proposed"
     },
@@ -62,7 +50,7 @@
     },
     "plugins/pstack/skills/poteto-mode/SKILL.md": {
       "kind": "policy",
-      "why": "Adds the Platform Adaptation section, whose runtime sentence the generator stamps from RUNTIMES, with its task-tool and todo.md fallback (per task slug when sessions share a checkout, and beside the desktop app's short update_plan list), the run-or-verify driver line, the deploy-platform and defect-severity triggers, the focused-fix exception to the why skill and the architect trigger, the port's principle summaries, the project playbooks paragraph, and the closed-review-gate rule that the Codex and Pi mappings point to, and it points the Agent-call defaults at the Models section with full tool access and the namespaced pstack:poteto-agent name, keeps trivial mechanical edits on the worker model where upstream names the swarm workers line, requires stopping an abandoned agent before replacing it, renders every reply item as prose, layers technical-writing on top of unslop, and describes Autopilot-full as stopping at merge-ready for the operator's click and Autopilot-stack as Autopilot-full for PRs that build on each other, and, for pstack-rinti, names tautological tests in the Test Behavior, Not Implementation summary.",
+      "why": "Adds the Platform Adaptation section, whose runtime sentence the generator stamps from RUNTIMES, with its task-tool and todo.md fallback (per task slug when sessions share a checkout, and beside the desktop app's short update_plan list), the deploy-platform and defect-severity triggers, the focused-fix exception to the why skill and the architect trigger, the project playbooks paragraph, and the closed-review-gate rule that the Codex and Pi mappings point to, says that only the namespaced pstack:poteto-agent name resolves, keeps trivial mechanical edits on the worker model where upstream names the swarm workers line, requires stopping an abandoned agent before replacing it, renders every reply item as prose, layers technical-writing on top of unslop, and describes Autopilot-full as stopping at merge-ready for the operator's click and Autopilot-stack as Autopilot-full for PRs that build on each other, and, for pstack-rinti, names tautological tests in the Test Behavior, Not Implementation summary.",
       "since": "0.9.2",
       "upstream": "not-proposed"
     },
@@ -94,12 +82,6 @@
       "kind": "policy",
       "why": "Gives every file-writing delegate its own worktree, based on the branch's HEAD when it builds on unmerged commits, and forbids writing in a worktree a delegate still holds.",
       "since": "0.9.39",
-      "upstream": "not-proposed"
-    },
-    "plugins/pstack/skills/poteto-mode/playbooks/multi-phase-plan.md": {
-      "kind": "port-feature",
-      "why": "Plans read skills from the installed plugin, keep the store under ~/.claude/orchestrate, write the program objective into the store's notes.md, run the tick as a dynamic-mode /loop that re-reads that objective, run live lanes in worktrees through the driver skill the Non-negotiables resolve instead of on cloud VMs with control-ui or control-cli, name the configured swarm workers model instead of a placeholder, leave rebase and merge authority to the execution playbook, and pick Autopilot-stack only when a PR builds on another, because neither autopilot merges.",
-      "since": "0.9.19",
       "upstream": "not-proposed"
     },
     "plugins/pstack/skills/poteto-mode/playbooks/opening-a-pr.md": {
@@ -136,18 +118,6 @@
       "kind": "policy",
       "why": "Exits with a clear message when run without bun and installs production dependencies only.",
       "since": "0.9.11",
-      "upstream": "not-proposed"
-    },
-    "plugins/pstack/skills/poteto-mode/scripts/check-plan.mjs": {
-      "kind": "port-feature",
-      "why": "Checks for the port's plan skeleton markers (the objective written into the program store's notes.md, installed-plugin reads, an hourly cadence, the configured swarm workers model), requires a box under each program task and under Close the program, excludes fenced examples from required section and review-gate text, opens and closes a code fence at any indentation so a fence inside a list item counts, and strips a leading byte-order mark before parsing.",
-      "since": "0.9.19",
-      "upstream": "not-proposed"
-    },
-    "plugins/pstack/skills/poteto-mode/scripts/check-plan.test.ts": {
-      "kind": "port-feature",
-      "why": "Gives upstream's valid-plan fixture the boxes under each program task and under Close the program, the notes.md, installed-plugin, and hourly lines, and the configured swarm workers lane line that the port's checker requires.",
-      "since": "0.9.83",
       "upstream": "not-proposed"
     },
     "plugins/pstack/skills/poteto-mode/scripts/package.json": {
@@ -216,6 +186,12 @@
       "since": "0.9.24",
       "upstream": "not-proposed"
     },
+    "plugins/pstack/skills/poteto-mode/worker.md": {
+      "kind": "policy",
+      "why": "pstack-rinti: Adds a Revert heading to the worker's PR body list, naming what a plain revert misses, so a subagent's PR matches the Opening a PR playbook.",
+      "since": "0.1.33",
+      "upstream": "not-proposed"
+    },
     "plugins/pstack/skills/principle-build-the-lever/SKILL.md": {
       "kind": "policy",
       "why": "Requires executable semantic controls for each claimed comparison output and refusal or inconclusive results when required observations are missing.",
@@ -242,13 +218,13 @@
     },
     "plugins/pstack/skills/reflect/SKILL.md": {
       "kind": "port-feature",
-      "why": "Finds the session transcript with the port's find-transcript.mjs under the Claude Code projects directory that claude-project-dir.mjs prints, keeps the parent's conclusions out of the reviewer prompts (a fallback digest records events without a verdict, and nothing goes beside a transcript path), and drops Cursor's readonly agent mode and inline model column.",
+      "why": "Finds the session transcript after a compaction with the port's find-transcript.mjs under the Claude Code projects directory that claude-project-dir.mjs prints, forbids globbing across projects, and falls back to the conversation in context when the finder finds nothing.",
       "since": "0.1.0",
       "upstream": "not-proposed"
     },
     "plugins/pstack/skills/setup-pstack/SKILL.md": {
       "kind": "port-feature",
-      "why": "Writes the override sheet at each runtime's own path, loaded by @-include on Claude Code with a committed project sheet that replaces the user's, pasted into AGENTS.md on Codex, and read directly by the Muse plugin hook since none has Cursor's always-applied rules, replaces Cursor's budget step with a default effort and per-role effort levels and explains Codex's active-turn metadata requirement for session effort, adds the SessionStart hook toggle and names the Pi extension and OpenCode plugin as readers of it, keeps every runtime's sheet path table and per-runtime step changes in references/runtimes.md, routing GitHub Copilot to copilot.md, Kimi and Grok to runtime-specific setup, and OMP to native model configuration and its global routing toggle, numbers its verification and formal verification offers as steps 9 and 10, and, for pstack-rinti, offers and validates codex:<model> entries for the arena lines, architect runners, and interrogate reviewers.",
+      "why": "Writes the override sheet at each runtime's own path, loaded by @-include on Claude Code with a committed project sheet that replaces the user's, pasted into AGENTS.md on Codex, and read directly by the Muse plugin hook since none has Cursor's always-applied rules, replaces Cursor's budget step, its defaults marker, and its xhigh cap on sheet values with a default effort and per-role effort levels and explains Codex's active-turn metadata requirement for session effort, adds the SessionStart hook toggle and names the Pi extension and OpenCode plugin as readers of it, keeps every runtime's sheet path table and per-runtime step changes in references/runtimes.md, routing GitHub Copilot to copilot.md, Kimi and Grok to runtime-specific setup, and OMP to native model configuration and its global routing toggle, numbers its verification and formal verification offers as steps 9 and 10, and, for pstack-rinti, offers and validates codex:<model> entries for the arena lines and interrogate reviewers.",
       "since": "0.9.2",
       "upstream": "not-proposed"
     },
