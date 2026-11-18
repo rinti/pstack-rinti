@@ -2,6 +2,29 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.35 - sync to upstream 35a9094 (v0.15.43)
+
+Users get nothing new. This release only moves the upstream pin, so the port stays level with `cursor/plugins`. No skill text, script, or default changes.
+
+This release merges nothing from pstack-claude. He has no commit after `f1209c0`, which 0.1.34 merged.
+
+The upstream pin moves from `93b916d` to `35a9094`, still v0.15.43. The range has no pstack commits. Its twelve commits add `third_party/item`, `third_party/hq`, `third_party/fiscal-ai`, `third_party/createos`, and `third_party/lmty`, and list them in the root `README.md` and `.cursor-plugin/marketplace.json`. No component of this port carries any of those paths:
+
+- `a82d841` feat(third_party): add the Item plugin
+- `7eedb25` Merge pull request #1264 from cursor/add-item-plugin
+- `fc996a0` feat(third_party): add the HQ plugin
+- `4fed385` feat(third_party): add the Fiscal.ai plugin
+- `e27df34` Merge pull request #1263 from cursor/add-hq-plugin
+- `47c419d` feat(third_party): add the CreateOS plugin
+- `603ac52` Merge branch 'main' into add-fiscal-ai-plugin
+- `244c476` Merge pull request #1262 from cursor/add-createos-plugin
+- `3845497` Merge branch 'main' into add-fiscal-ai-plugin
+- `5692c3d` Merge pull request #1275 from cursor/add-fiscal-ai-plugin
+- `d823b2d` feat(third_party): add the LMTY plugin
+- `35a9094` Merge pull request #1269 from cursor/add-hospitable-plugin
+
+Measured with `bun tools/sync.mjs pstack 35a9094`: 456 unchanged, 38 excluded, nothing updated, merged, added, deleted, or conflicted. The forked total stays at 1,871 lines in 57 files. No substitution rule and no `tools/forks.json` entry changes. The upstream pin in `docs/reference.md` now names `35a9094`.
+
 ## 0.1.34 - merge pstack-claude f1209c0, sync to upstream 93b916d (v0.15.43)
 
 Users get a worktree audit that reports more of what a cleanup would lose, a Pi extension that checks a retained agent worktree is still its own before it resumes or removes it, a project playbook checker that accepts more frontmatter, and GPT-6.2 defaults on Codex. No skill text from upstream changes.
