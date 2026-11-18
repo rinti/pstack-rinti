@@ -2,6 +2,34 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.34 - merge pstack-claude f1209c0, sync to upstream 93b916d (v0.15.43)
+
+Users get a worktree audit that reports more of what a cleanup would lose, a Pi extension that checks a retained agent worktree is still its own before it resumes or removes it, a project playbook checker that accepts more frontmatter, and GPT-6.2 defaults on Codex. No skill text from upstream changes.
+
+This release merges pstack-claude through `f1209c0`, his release 0.9.139:
+
+- `f1209c0` Fix worktree cleanup, Pi resume, and playbook validation, and update GPT-6.2 defaults (#464), taken whole.
+  - `worktree-audit.mjs` counts ignored files inside initialized submodules, which the superproject's status leaves out. It reads the trunk and every branch tip from one `git ls-remote` call and compares each local branch with the tip origin advertises, so a branch deleted or advanced on origin no longer reads from a stale tracking ref. The Worktree cleanup playbook names the `git submodule foreach` command that lists those ignored paths.
+  - Pi writes an owner marker into the private Git directory of each agent worktree it creates. A resumed agent, and its cleanup, refuse a worktree whose marker is missing or names another owner, so a reused path cannot redirect them. A session record from before this release has no marker and is matched by its recorded branch.
+  - `check-playbooks.mjs` accepts YAML comments and a block list under `extends`, skips fenced examples, and checks each quoted anchor against one bundled step, not against the playbook as a whole.
+  - Codex defaults move to `gpt-6.2-sol` for the general and worker roles and `gpt-6.2-astra` for `strongest judgment`, and the default Codex panel is `gpt-6.2-astra`, `gpt-6.2-sol`, `gpt-6.1-terra`, `gpt-6-luna`. On Pi's two OpenAI providers, the extension uses those models when the session's model registry lists them and keeps the table's IDs when it does not. A `pi models` line in the override sheet still wins.
+
+The merge conflicted in the version line of the ten manifests, `VERSION`, and `CHANGES.md`, where this fork's `0.1.x` line and entries stay, and in the Codex model bullets of `skills/poteto-mode/references/codex-tools.md`. Those bullets are stamped from `plugins/pstack/models.json`. The generator rewrote them with his GPT-6.2 slugs and this fork's panel list, which has not named `architect` since 0.1.33. His new `why` for `skills/poteto-mode/playbooks/worktree-cleanup.md` in `tools/forks.json` merged clean.
+
+This fork's own Codex seat examples in `README.md` and `skills/arena/SKILL.md` still name `codex:gpt-6.1-sol` and `codex:gpt-6-astra`. A `codex:<model>` entry passes the slug to the Codex CLI as written, so the examples stay valid and the defaults above do not touch them.
+
+The upstream pin moves from `e1cc031` to `93b916d`, still v0.15.43. The range has no pstack commits. Its seven commits add `third_party/rillet`, `third_party/strava`, and `third_party/expensify`. No component of this port carries any of those paths:
+
+- `2b37a9c` feat(third_party): add the Rillet plugin
+- `1d4b071` feat(third_party): add Strava plugin
+- `60355cf` Merge pull request #1267 from cursor/minu/plugin-strava
+- `063c642` feat(third_party): add Expensify plugin
+- `536a335` Merge pull request #1268 from cursor/minu/plugin-expensify
+- `505b8b8` Merge branch 'main' into add-rillet-plugin
+- `93b916d` Merge pull request #1230 from cursor/add-rillet-plugin
+
+Measured with `bun tools/sync.mjs pstack 93b916d`: 456 unchanged, 57 forked and untouched, 38 excluded, nothing updated, merged, or conflicted. No denylist token was hit, the sync needed no substitution rule and no `tools/forks.json` change of its own, and this fork's Codex seats, converging review rounds, bug-class and pre-existing rules, `## Revert` section, and tautological-test rules are untouched. The forked total stays at 1,871 lines. The upstream pin in `docs/reference.md` now names `93b916d`.
+
 ## 0.1.33 - sync to upstream e1cc031 (v0.15.43)
 
 Users get much shorter skills. `/architect` is two paragraphs: trace what the change touches, sketch two shapes, pick the one with one owner per piece of state, and run `/arena` for a large or contested design. `/reflect` reads the transcript in the session and presents accepted, rejected, and backlog findings; it no longer spawns three reviewers and a synthesizer. `/unslop`, `/technical-writing`, the principle skills, and the Non-negotiables, Subagents, and reply sections of `/poteto-mode` say the same things in fewer words, and the playbook list is a line of names. Every subagent kickoff now opens with `Read <path>/worker.md before anything else.`, and the new `skills/poteto-mode/worker.md` holds the operator's standing rules for a worker: the bar in the kickoff is the whole bar, no question tools, PRs open ready for review, and the PR title and body shape. The Orchestrate playbook is gone. The Multi-phase plan playbook is five steps with no plan skeleton, so its checker `check-plan.mjs` is gone too. The override sheet loses three roles: `architect runners`, `reflect tooling`, and `reflect judgment, divergent, synthesizer`. A sheet that still has those lines stays valid, every reader ignores them, and the next `/setup-pstack` run drops them.
