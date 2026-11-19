@@ -2,6 +2,23 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.37 - merge pstack-claude 412990b, sync to upstream 50b3a32 (v0.15.44)
+
+Users get one fix: `watch-pr` no longer calls a fork PR ready while its Actions workflows wait for maintainer approval and another app, such as a CLA bot, has reported a passing check. GitHub gives a gated workflow a check suite with no runs, so no check read showed it, and the watcher read the other app's check alone as clean CI. Before the watcher counts a head's CI as clean or absent, it now reads the head's check suites. Beside reported checks, a suite with no runs that waits for approval, or an Actions suite that has not started, counts as a check. A suite waiting for approval is a failed `ACTION_REQUIRED` check, so the watcher stops with exit 4, and a suite still running is a pending check it waits on. A run that a later run of the same workflow replaced does not count. On a head with no reported checks, a gated suite now shows as that failed check on the first read, where 0.1.36 reported a retried query failure that ended in exit 7 after about 12 minutes.
+
+This release merges pstack-claude through `412990b`, his release 0.9.143:
+
+- `412990b` Block watch-pr on approval-gated Actions beside other checks (#473), taken except its version numbers. Its `watch-pr` code, tests, and `tools/forks.json` reasons for `fakes.test-helper.ts`, `github.ts`, `policy.ts`, and `types.ts` merged clean. Every manifest keeps this fork's `0.1.x` version, and this entry stands in for his `0.9.143` heading.
+
+His `tools/upstream.json` pin stays at `2f87c85`. This fork's newer `e58dd04` stands until the sync below moves it.
+
+The upstream pin moves from `e58dd04` to `50b3a32`, still v0.15.44. The range has no pstack commits. Its two commits rename the `third_party/quickbooks-online` plugin to Intuit QuickBooks and update the cursor/plugins README for it. No component of this port carries those paths:
+
+- `171fccb` feat(quickbooks-online): rename to Intuit QuickBooks, refresh description, logo, and category
+- `50b3a32` Merge pull request #1291 from djiang-jq/djiang/intuit-quickbooks
+
+Measured with `bun tools/sync.mjs pstack 50b3a32`: 455 unchanged, 58 forked and untouched, 38 excluded, nothing updated, merged, or conflicted. No denylist token was hit, the sync needed no substitution rule and no `tools/forks.json` change, and this fork's own forks are untouched. The forked total stays at 2,009 lines. The upstream pin in `docs/reference.md` and the upstream Claude Code install link in `README.md` now name `50b3a32`.
+
 ## 0.1.36 - merge pstack-claude 3d9cc3f, sync to upstream e58dd04 (v0.15.44)
 
 Users get Michael's reviewed translation of upstream's shorter skills in place of the one this fork wrote in 0.1.33, and three fixes. `watch-pr` no longer reads a fork PR whose CI waits for maintainer approval as a repository with no checks, so it cannot call such a PR ready with CI never run. `check-playbooks.mjs` accepts a project playbook anchored on `opening-a-pr.md` or `babysit.md`, which have no numbered steps: each paragraph and list item counts as a step, and poteto-mode's Project playbooks paragraph says so. On OMP, generated project skills go to `.omp/skills/`. From the translation, `/architect` again asks to compare accepted deviations with the saved sketch before each implementation unit closes, poteto-mode keeps a skipped playbook step in the todolist as a `skip: <reason>` line, points the bot-review trigger at the triage rubric, and runs a second opinion on a model from another family. A role runs above xhigh only when the sheet sets that level on the role's line or on the `default effort` line.
