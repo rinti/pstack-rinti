@@ -2,6 +2,45 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.36 - merge pstack-claude 3d9cc3f, sync to upstream e58dd04 (v0.15.44)
+
+Users get Michael's reviewed translation of upstream's shorter skills in place of the one this fork wrote in 0.1.33, and three fixes. `watch-pr` no longer reads a fork PR whose CI waits for maintainer approval as a repository with no checks, so it cannot call such a PR ready with CI never run. `check-playbooks.mjs` accepts a project playbook anchored on `opening-a-pr.md` or `babysit.md`, which have no numbered steps: each paragraph and list item counts as a step, and poteto-mode's Project playbooks paragraph says so. On OMP, generated project skills go to `.omp/skills/`. From the translation, `/architect` again asks to compare accepted deviations with the saved sketch before each implementation unit closes, poteto-mode keeps a skipped playbook step in the todolist as a `skip: <reason>` line, points the bot-review trigger at the triage rubric, and runs a second opinion on a model from another family. A role runs above xhigh only when the sheet sets that level on the role's line or on the `default effort` line.
+
+This release merges pstack-claude through `3d9cc3f`, his releases 0.9.140, 0.9.141, and 0.9.142:
+
+- `e9db3a5` ci: bump hashgraph-online/ai-plugin-scanner-action from 1.2.815 to 1.2.816 (#465), taken whole.
+- `e36d113` Sync to upstream 2f87c85 (v0.15.43): shorter skills, worker.md, one-file how, why, and reflect (#467), taken in part. See below.
+- `c944321` Stop watch-pr reading approval-gated fork CI as no CI (#460), taken whole. Its `tools/forks.json` reason for `watch-pr/github.ts` merged clean.
+- `dbc378f` Anchor playbook changes on paragraphs when a base has no numbered steps (#468), taken whole.
+- `139a9bf` Write generated project skills to .omp/skills/ on OMP (#469), taken whole.
+- `3d9cc3f` Release 0.9.142 (#471), taken except its version numbers. Every manifest keeps this fork's `0.1.x` version, and this entry stands in for his three `0.9.x` headings.
+
+`e36d113` translates the same upstream commit, `2f87c85`, that this fork translated on its own in 0.1.33. No pstack commit lies between his pin `2f87c85` and this fork's `35a9094`, so the two translations cover the same upstream text. The merge takes his, because his was reviewed, and keeps this fork's own forks on top of it: Codex seats in `arena` and `setup-pstack`, converging review rounds in `interrogate`, the bug-class and pre-existing rules in the Babysit playbook, the `## Revert` heading in the Opening a PR playbook and in `worker.md`, and the tautological-test rules in `principle-test-behavior-not-implementation` and in poteto-mode's principle summary. The `tools/upstream.json` pin keeps this fork's newer `35a9094` until the sync below moves it.
+
+What this fork kept from its own 0.1.33 translation, where his differs:
+
+- poteto-mode keeps trivial mechanical edits on the worker model, the `feature, refactoring` default, where he reads the `swarm workers` line. It keeps the sentence that Autopilot-full stops at merge-ready and the operator clicks every merge, which his text no longer has. The focused-fix exception still skips the **why** skill as well as **architect**. These three are in the `tools/forks.json` reason of `poteto-mode/SKILL.md` that this fork must keep, so the reason now holds his clauses and these.
+- The bug-fix playbook's focused-fix exception and comment-sicko still name `why` alone, since upstream took `how` out of the bug-fix steps. `poteto-help` says the Playbooks section lists every playbook, since the list is names only now. These merged clean.
+- `codex-session-effort.mjs` keeps this fork's filter for Node 22's `node:sqlite` warning (0.1.26), and `watch-pr/github.test.ts` keeps its deleted-fork fixture row, which its `tools/forks.json` reason names again.
+
+What this fork dropped in favour of his translation:
+
+- `skills/why/references/epistemics.md` and the `tools/forks.json` entry for `skills/why/SKILL.md` that pointed at it. He deletes the file with upstream and puts its human-rulings rule inline in `recall` and the Session pickup playbook.
+- Nineteen substitution rules of this fork's that rewrote the same upstream sentences his rules rewrite. His rules stay. This fork's `composer-` denylist token stays, since no rule of his denies a bare `composer-` slug.
+- Wording of this fork's in poteto-mode: "No spawn raises a role above xhigh" becomes his rule above, the sentence that Claude Code sets fast mode for the whole session goes, and the Babysit playbook says "the watcher" and "review-bot comments".
+- The Opening a PR playbook's sentence that a delegate's children do not inherit its brief. Upstream never had it, and he dropped it from his fork.
+- This fork's removal of the X05 session-scratchpad row from `docs/pi-equivalence.md`. His row stays with the wording "No skill names a scratchpad.", and `tests/pi-equivalence.test.mjs` counts 61 rows again.
+
+His merge also brings back two forks of his that 0.1.33 had dropped: `architect/SKILL.md`, with the deviation rule and the platform mapping lines, and `multi-phase-plan.md`, which resolves the driver skill through the Non-negotiables.
+
+The upstream pin moves from `35a9094` (v0.15.43) to `e58dd04` (v0.15.44). The range has one commit:
+
+- `e58dd04` chore(pstack): route the Gemini seat to Gemini 4 Neon (#1283)
+
+Nothing reaches users from it. The port's panels hold no Gemini seat, and its defaults come from `models.json`. In `arena` and poteto-mode the new slug derives to the same port text. In poteto-mode the sentence capping a Gemini seat dropped its ", its top slug" clause, so the rule that removes that sentence now takes the clause as optional. `setup-pstack` conflicted in two hunks: upstream's new paragraph that moves old `gemini-4-*` panel entries to `gemini-4-neon-high`, and its reworded budget step. The port's sheet never held a Gemini default and the port replaces the budget step, so the port's text stands in both hunks and this fork dropped upstream's two changes.
+
+Measured with `bun tools/sync.mjs pstack e58dd04`: 455 unchanged, 38 excluded, 1 conflicted (`skills/setup-pstack/SKILL.md`, 2 hunks), nothing updated, merged, added, or deleted. The forked total goes from 1,871 lines in 57 files to 1,941 lines in 58 files, from the merge. The upstream pin in `docs/reference.md` and the harness link in `README.md` now name `e58dd04`.
+
 ## 0.1.35 - sync to upstream 35a9094 (v0.15.43)
 
 Users get nothing new. This release only moves the upstream pin, so the port stays level with `cursor/plugins`. No skill text, script, or default changes.
