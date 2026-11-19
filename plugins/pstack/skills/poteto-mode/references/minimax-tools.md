@@ -78,9 +78,9 @@ Most skills need only the tables above. These need one more mapping:
 | `no-comments` | The `comment-sicko` dispatch is a `task` call with `agent_name: "pstack:comment-sicko"`. |
 | `thermos` | Both review dispatches are `task` calls with the agents' `pstack:` names. |
 | `swarm` | Each worker is a `task` call. Give each writing worker its own worktree first (see Subagent policy). |
-| `why` | For sources beyond the commits and PR discussions, list MCP servers with `tool_search`, not from Claude Code's MCP files. |
+| `why` | List MCP servers with `tool_search`, not from Claude Code's MCP files. |
 | `recall` | Do not list or read `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/projects/`; it holds Claude Code history, not this session's (see Tool actions). Work from live state and the shared record. |
-| `reflect` | The transcript finder reads Claude Code's layout and has no MiniMax Code location to read, so work from the conversation in context. |
+| `reflect` | The transcript finder reads Claude Code's layout and has no MiniMax Code location to read, so work from the conversation in your context, as the skill allows when the finder finds nothing. |
 | `show-me-your-work` | Check the log against this session's own context, not a Claude Code transcript. |
 | `automate-me` | The skill-authoring guidance resolves through the skills table above. This mapping names no MiniMax Code transcript location, so draw on the current session and the user's own account of how they work. Write the mode skill under `.agents/skills/` or `.claude/skills/`. |
 

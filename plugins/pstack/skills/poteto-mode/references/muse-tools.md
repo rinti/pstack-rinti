@@ -86,11 +86,12 @@ Affected skill entry points point here. Most skills need only the tables above. 
 | `maintain-formal-verification-skill` | Project skills, the formal verification skill among them, live under `.agents/skills/`. |
 | `babysit` | `loop` and `AskUserQuestion` resolve through the tables above. |
 | `automate-me` | The skill-authoring guidance resolves through the skills table above. The workspace's transcripts are its Muse sessions (see Tool actions), and the mode skill lands in the Muse user skills directory or `.agents/skills/`. |
+| `architect` | A large or contested design goes through the **arena** skill, so its fan-out and model substitution apply here too. |
 | `arena` | The parallel candidates and the cross-judge are Workflow children or `subagent_spawn` calls on the configured Muse models (see Model names). |
-| `how` | The explaining subagent maps to one `subagent_spawn` call. |
-| `reflect` | The transcript finder reads Claude Code's layout, so work from the conversation in context. |
+| `how` | The one read-only subagent maps to `subagent_spawn`. |
+| `reflect` | The transcript finder reads Claude Code's layout, so work from the conversation in your context, as the skill allows when the finder finds nothing. |
 | `swarm` | Each worker is a `subagent_spawn` call or a Workflow child; give each writing worker worktree isolation or its own output directory (see Subagent policy). |
-| `why` | For sources beyond the commits and PR discussions, list MCP servers from the tools Muse exposes to the session, not from Claude Code's MCP files. |
+| `why` | List MCP servers from the tools Muse exposes to the session, not from Claude Code's MCP files. |
 | `typescript-best-practices` | Its frontmatter `paths` scoping is Claude Code metadata on Muse; invoke it by name for TypeScript work. |
 | `recall` | Search this workspace's Muse sessions (see Tool actions), not Claude Code's projects directory. |
 | `show-me-your-work` | Check the log against this run's Muse session file (see Tool actions), not a Claude Code transcript. |

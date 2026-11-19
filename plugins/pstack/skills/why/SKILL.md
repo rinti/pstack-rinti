@@ -14,5 +14,3 @@ On Muse, read the [platform mapping](../poteto-mode/references/muse-tools.md), i
 On Antigravity, read the [platform mapping](../poteto-mode/references/agy-tools.md), including its per-skill notes, before following this skill.
 
 Answer from the record, not the code: read the commits and PR discussions that introduced the target and each later change, and other sources if the trail is thin. Cite what the authors wrote, mark your own inferences as inferences, and say what the record does not answer.
-
-For a claim about a human ruling, follow [Claims about human decisions](references/epistemics.md#claims-about-human-decisions). Return the attributable original wording and its source, label an agent summary or interpretation as one, and leave the scope uncertain when the original is unavailable.

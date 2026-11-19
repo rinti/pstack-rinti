@@ -37,4 +37,4 @@ Read `<KIMI_CODE_HOME>/pstack-models.md` before a skill that needs a role model 
 
 | Skill | On Kimi Code CLI |
 | --- | --- |
-| `why` | The skill spawns no subagent. Read the record in this session. |
+| `why` | Answer from the commits and PR discussions you can read, and say what the record does not answer. |

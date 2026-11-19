@@ -47,4 +47,4 @@ Skills name Claude Code model aliases in their Models sections. Grok Build's ava
 
 | Skill | On Grok Build |
 | --- | --- |
-| `why` | For sources beyond the commits and PR discussions, list MCP servers with `search_tool`, not from Claude Code's MCP files. |
+| `why` | List MCP servers with `search_tool`, not from Claude Code's MCP files. |

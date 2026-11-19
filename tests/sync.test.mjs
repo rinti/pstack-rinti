@@ -124,14 +124,14 @@ describe("applySubstitutions", () => {
     );
   });
 
-  test("a playbook's model default points at poteto-mode's Models section, whatever the slug", () => {
+  test("a playbook model default points at poteto-mode's Models section, whatever the slug", () => {
     const line = (slug) => `your configured hillclimb model (default \`${slug}\`)`;
     for (const slug of ["grok-4.7-xhigh-fast", "claude-fable-5-1-thinking-max", "gpt-6-sol-max"]) {
       expect(applySubstitutions(line(slug), RULES.substitutions, "skills/poteto-mode/playbooks/hillclimb.md").text).toBe(
         "your configured hillclimb model (default in poteto-mode's Models section)",
       );
     }
-    expect(applySubstitutions("(default `true`)", RULES.substitutions, "skills/poteto-mode/playbooks/hillclimb.md").text).toBe(
+    expect(applySubstitutions("(default `true`)", RULES.substitutions, "skills/reflect/SKILL.md").text).toBe(
       "(default `true`)",
     );
   });
@@ -165,7 +165,7 @@ describe("applySubstitutions", () => {
     ],
     [
       "skills/arena/SKILL.md",
-      "Families go by prefix: `claude-*`, `gpt-*`, and `grok-*`.",
+      "Families go by prefix, and the longest match wins: `claude-fable-*`, `claude-*`, and `gemini-*`, after dropping a leading `cursor-`. Any other slug's family is its text before the first hyphen.",
       "Families go by model name, such as Opus, Fable, or Sonnet.",
     ],
     [
@@ -212,6 +212,11 @@ describe("applySubstitutions", () => {
       "skills/poteto-mode/playbooks/autonomous-run.md",
       "Pick the wake mechanism using Cursor's `/loop` command (a built-in, not a pstack skill).",
       "Pick the wake mechanism using Claude Code's `loop` skill (a built-in, not a pstack skill).",
+    ],
+    [
+      "skills/poteto-mode/playbooks/babysit.md",
+      "This playbook replaces Cursor's built-in babysit skill for these requests.",
+      "This playbook replaces the bundled **babysit** skill for these requests.",
     ],
     [
       "agents/poteto-agent.md",

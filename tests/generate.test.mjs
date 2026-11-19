@@ -728,7 +728,7 @@ describe("plan, changes, apply", () => {
 
   test("plan converges a duplicated lead line, so --check flags the file as stale", () => {
     const root = repoCopy();
-    const file = "plugins/pstack/skills/how/SKILL.md";
+    const file = "plugins/pstack/skills/swarm/SKILL.md";
     const original = readFileSync(join(root, file), "utf8");
     expect(original).toContain(`\n\n${codex.preamble}\n`);
     writeFileSync(join(root, file), original.replace(`\n\n${codex.preamble}\n`, `\n\n${codex.preamble}\n${codex.preamble}\n`));

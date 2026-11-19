@@ -21,7 +21,7 @@ Every candidate gets the same prompt, so the prompt is the contract.
 
 1. State the artifact each candidate is producing.
 2. Derive the rubric, 3-6 concrete gradeable criteria for what success looks like on *this* task. It is the picker's tool in Phase D. Candidates only see the task.
-3. Pick the runners from the `arena runners` line in `pstack-models.md`, by default the role's list in [Models](#models). An `auto` or `inherit-parent` entry is the parent model, so omit `model`. On Claude Code, a `codex:<model>` entry runs through the Codex CLI per [Codex seats](#codex-seats). If the `Agent` tool rejects a slug, use the nearest valid slug of the same family or drop the seat, keep at least two runners, and say so. Families go by model name, such as Opus, Fable, or Sonnet. Spawn more for multiple design directions, and repeat one model when the work is generation-bound, not judgment-sensitive. Pick each subagent's reasoning level per the Subagents section of the **poteto-mode** skill.
+3. Pick the runners from the `arena runners` line in `pstack-models.md`, or from [Models](#models) when the sheet has no such line. An `auto` or `inherit-parent` entry is the parent model, so omit `model` and spawn `general-purpose`. On Claude Code, a `codex:<model>` entry runs through the Codex CLI per [Codex seats](#codex-seats). If the `Agent` tool rejects a slug, use the nearest valid slug of the same family or drop the seat, keep at least two runners, and say so. Families go by model name, such as Opus, Fable, or Sonnet. Spawn more for multiple design directions, and repeat one model when the work is generation-bound, not judgment-sensitive. Pick each subagent's reasoning level per the Subagents section of the **poteto-mode** skill.
 4. Give each candidate its own output location (a git worktree where possible, otherwise `/tmp/arena-<slug>/candidate-<n>/`), per the **separate-before-serializing-shared-state** principle skill.
 
 ## Phase B: Fan out
@@ -32,7 +32,7 @@ If a candidate produces no output, proceed with N-1 and note the dropout.
 
 ## Phase C: Cross-judge
 
-After all Phase B candidates complete, spawn one readonly judge from the `arena cross-judge pool` line in `pstack-models.md`, by default the role's list in [Models](#models). The judge is never from the parent's family, so use the first entry from another family. An `auto` or `inherit-parent` entry is the parent model. If you do not know the parent's model, use the first real slug and say that the family check did not run. If the `Agent` tool rejects a slug, use the nearest valid slug of the same family, then the next such entry, or skip the judge, and say so. While you read in Phase D, the judge scores each candidate, by path label, on each rubric criterion and recommends a base.
+After all Phase B candidates complete, spawn one readonly judge from the `arena cross-judge pool` line in `pstack-models.md`, or from [Models](#models) when the sheet has no such line. The judge is never from the parent's family, as Phase A step 3 defines families, so use the first entry from another family. An `auto` or `inherit-parent` entry is the parent model. If you do not know the parent's model, use the first real slug and say that the family check did not run. If the `Agent` tool rejects a slug, use the nearest valid slug of the same family, then the next such entry, or skip the judge, and say so. While you read in Phase D, the judge scores each candidate, by path label, on each rubric criterion and recommends a base.
 
 ## Phase D: Pick a base
 
