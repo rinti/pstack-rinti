@@ -2,6 +2,32 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.38 - sync to upstream aaeb0ea (v0.15.46)
+
+Users get upstream's own native Windows support for `/statechart`, which replaces the port's. The port has run `/statechart` on Windows since Michael's 0.9.116, through forks of five files. Upstream now does the same work its own way, so those forks go and the port runs upstream's code. The command's janitor is now `janitor.ts` on every platform, where macOS and Linux used a `/bin/sh` loop, and it kills the worker's process group through the new `kill.ts`, with `taskkill` on Windows. TLC's `\r\n` line ends are split where each line is read, its output is UTF-8 on every platform, and mise and java run with hidden windows. The skill says how to run the command with Node on native Windows, where the POSIX launcher script does not run.
+
+This release merges nothing from pstack-claude. He has no commit after `412990b`, which 0.1.37 merged.
+
+The upstream pin moves from `50b3a32` (v0.15.44) to `aaeb0ea` (v0.15.46). The range has two pstack commits:
+
+- `dd24b670` chore(pstack): run the Gemini panel seat at gemini-4-neon-xhigh (#1284)
+- `0b46ec39` fix(pstack): run /statechart on native Windows and read TLC's \r\n line ends (#1292)
+
+Its other four commits change the `front` plugin, which no component of this port carries.
+
+`dd24b670` reaches no user. The port's panels hold no Gemini seat, and its defaults come from `models.json`. In `arena` the new slug derives to the same port text. In poteto-mode the sentence on a Gemini seat now reads "A Gemini seat runs at `gemini-4-neon-xhigh` unless its line names another level.", so the rule that removes that sentence now reads both the old cap and the new wording. `setup-pstack` conflicted in two hunks again, on the paragraph that moves old Gemini panel entries, now to `gemini-4-neon-xhigh`, and on the budget step. As in 0.1.36, the port's sheet never held a Gemini default and the port replaces the budget step, so the port's text stands in both hunks and this fork dropped upstream's two changes.
+
+`0b46ec39` conflicted in four statechart files, each with one of Michael's Windows forks:
+
+- `janitor.ts` was a port-only file, the Windows janitor. Upstream added its own at that path, so the port takes upstream's.
+- `run.ts` takes upstream's removal of `killGroup`, which moved to `kill.ts`. Michael's `taskkill` branch in it is absorbed. His `childEnv` fork for the plugin directory's scanner stays.
+- `statechart.ts` takes upstream's janitor, spawned on every platform, and its TEMP and TMP variables, which absorb that part of Michael's fork. The port still hides the windows of the detached worker and janitor, which upstream does not.
+- `test/messages.test.ts` takes upstream's form. Upstream's new test reads Windows line ends as Michael's did, on another corpus spec, so his test is absorbed.
+
+`frontends/messages.ts` did not conflict, but upstream's new `splitLines` drops the `\r` in every reader that feeds it, so Michael's fork that dropped it there is absorbed and the file takes upstream's form.
+
+Measured with `bun tools/sync.mjs pstack aaeb0ea`: 459 unchanged, 56 forked and untouched, 38 excluded, after the conflicts above were resolved. No substitution rule is new. The rule that removes poteto-mode's Gemini-seat sentence widens to the new wording. `tools/forks.json` drops the entries for `frontends/messages.ts` and `test/messages.test.ts`, and the reasons for `run.ts` and `statechart.ts` lose their absorbed clauses. This fork's own forks are untouched. The forked total goes from 2,009 lines in 58 files to 1,976 lines in 56 files. The upstream pin in `docs/reference.md` and the upstream Claude Code install link in `README.md` now name `aaeb0ea`.
+
 ## 0.1.37 - merge pstack-claude 412990b, sync to upstream 50b3a32 (v0.15.44)
 
 Users get one fix: `watch-pr` no longer calls a fork PR ready while its Actions workflows wait for maintainer approval and another app, such as a CLA bot, has reported a passing check. GitHub gives a gated workflow a check suite with no runs, so no check read showed it, and the watcher read the other app's check alone as clean CI. Before the watcher counts a head's CI as clean or absent, it now reads the head's check suites. Beside reported checks, a suite with no runs that waits for approval, or an Actions suite that has not started, counts as a check. A suite waiting for approval is a failed `ACTION_REQUIRED` check, so the watcher stops with exit 4, and a suite still running is a pending check it waits on. A run that a later run of the same workflow replaced does not count. On a head with no reported checks, a gated suite now shows as that failed check on the first read, where 0.1.36 reported a retried query failure that ended in exit 7 after about 12 minutes.
