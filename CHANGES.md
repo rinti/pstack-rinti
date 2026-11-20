@@ -2,6 +2,33 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.39 - merge pstack-claude ce7df68
+
+Users get four fixes and one new runtime. On Codex, the SessionStart hook finds the plugin from its own path when `CLAUDE_PLUGIN_ROOT` is not in its environment, so a Codex 0.170.0 session no longer prints `SessionStart Failed`. When a PR already has reported checks, `watch-pr` verifies the head and the run count before it decides that a check suite is covered, and each failed or pending row that the check-suites read supplied carries `source: "check-suites"` in the verdict JSON. The suite lookup requires GitHub CLI 2.48 or later, and a CLI that rejects `--slurp` now exits 7 at once with an upgrade instruction, where it retried for about 12 minutes before. `check-playbooks.mjs` reads a setext heading and an ATX heading with a tab after its `#` run as headings. On native Windows, the `taskkill` that `/statechart`'s janitor runs opens no console window. DeepSeek Harness (DSH) can run pstack as a skills-only install through the shared `~/.agents/skills/` path, with [`dsh-tools.md`](plugins/pstack/skills/poteto-mode/references/dsh-tools.md) as its mapping. DSH gets no native bundle, SessionStart hook, or role sheet.
+
+This release merges pstack-claude through `ce7df68`, his releases 0.9.144 and 0.9.145:
+
+- `52fc63b` List every supported runtime in the bug report form (#482), taken whole.
+- `79a6243` Find the Codex SessionStart plugin from the hook's own path (#485), taken whole.
+- `25128ed` Treat setext and tab-separated headings as headings in check-playbooks (#478), taken whole.
+- `1cadabb` Verify and attribute watch-pr check suite evidence; release 0.9.144 (#486), taken except its version numbers. Its `watch-pr` code, the new port-only `check-suites.ts` and `head-checks.ts`, its tests, and its `tools/forks.json` reasons for `fakes.test-helper.ts`, `github.ts`, `policy.ts`, `render.ts`, and `types.ts` merged clean.
+- `946a30c` Add skills-only DeepSeek Harness support (#429), taken whole. The README's shared install commands keep this fork's `rinti/pstack-rinti` clone URL.
+- `ce7df68` Sync to upstream 0b46ec3 (v0.15.46): statechart reads TLC's \r\n line ends, release 0.9.145 (#480), taken in part. 0.1.38 had already synced the same upstream commits, so most of his statechart text was here and merged as equal.
+
+Every manifest keeps this fork's `0.1.x` version, and this entry stands in for his `0.9.144` and `0.9.145` headings.
+
+Where his sync and 0.1.38 differed, the merge settled it this way:
+
+- `statechart/scripts/kill.ts` conflicted, because both sides added the file. 0.1.38 took upstream's file as it was. He forks it so that `taskkill` starts with `windowsHide`, because the detached janitor that calls it has no console of its own, and his `tests/statechart-windows-hide.test.mjs` requires that. The merge takes his file and his `tools/forks.json` entry for it.
+- `statechart/scripts/frontends/messages.ts` did not conflict. He still carries the fork that drops the `\r` from each line there and still declares it. 0.1.38 removed that fork as absorbed, because upstream's `splitLines` now drops the `\r` in every reader that feeds the message reader, and upstream's own `test/messages.test.ts` covers Windows line ends. The file stays equal to upstream and has no `tools/forks.json` entry.
+- The rule in `tools/substitutions.json` that removes poteto-mode's Gemini-seat sentence takes his form, which matches upstream's current wording only. This fork's wider form from 0.1.38, which also read the old cap wording, goes. Both derive the same text at the pin.
+- The `tools/forks.json` reason for `statechart.ts` takes his shorter wording.
+- His `tools/upstream.json` pin is `0b46ec3`. This fork's `aaeb0ea` is newer and stands, as do the `aaeb0ea` pin in `docs/reference.md` and the upstream install link in `README.md`.
+
+This release syncs nothing new from upstream. The pin was already at `aaeb0ea` (v0.15.46), the newest cursor/plugins commit. The four commits between his `0b46ec3` and `aaeb0ea` change the `front` plugin only, so both pins hold the same pstack text.
+
+Measured with `bun tools/sync.mjs pstack aaeb0ea --dry-run`: 458 unchanged, 57 forked and untouched, 38 excluded, nothing updated, merged, or conflicted. `kill.ts` is the one new fork. The forked total goes from 1,976 lines in 56 files to 1,959 lines in 57 files, because #486 moved suite code out of the forked `github.ts` and `policy.ts` into port-only files. This fork's own forks are untouched.
+
 ## 0.1.38 - sync to upstream aaeb0ea (v0.15.46)
 
 Users get upstream's own native Windows support for `/statechart`, which replaces the port's. The port has run `/statechart` on Windows since Michael's 0.9.116, through forks of five files. Upstream now does the same work its own way, so those forks go and the port runs upstream's code. The command's janitor is now `janitor.ts` on every platform, where macOS and Linux used a `/bin/sh` loop, and it kills the worker's process group through the new `kill.ts`, with `taskkill` on Windows. TLC's `\r\n` line ends are split where each line is read, its output is UTF-8 on every platform, and mise and java run with hidden windows. The skill says how to run the command with Node on native Windows, where the POSIX launcher script does not run.
