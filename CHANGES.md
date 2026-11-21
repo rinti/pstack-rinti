@@ -2,6 +2,30 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.40 - merge pstack-claude 97d2ba2, sync to upstream 792440e (v0.15.46)
+
+Users get four fixes from pstack-claude. `watch-pr --expect-app <slug>` names a GitHub App that runs the repository's CI, so the watcher waits on that app's queued check suite with no runs instead of reading it as clean CI. The ready proof and status rows list each suite the watcher did not count as `queuedWithoutRuns`. In a Claude Code cloud session, where the GitHub proxy refuses GraphQL, `watch-pr` stops with exit 7 on its first read and reports a `graphql-refused` failure, where it retried for minutes before. `docs/reference.md` says that `watch-pr` and `ship-pr` need GraphQL and how to read the PR over REST instead. `PSTACK_SESSION_HOOK=off` turns routing off where no user sheet survives between sessions, such as a Claude Code cloud session: `session-start.sh` and `session-start.ps1` check the variable before the sheet, and `setup-pstack` and `poteto-help` say so. On OMP, `reflect` writes an edited pstack skill to OMP's skill folders, and on every runtime it says before approval that the edited copy is a separate skill that pstack's routing can keep bypassing.
+
+This release merges pstack-claude through `97d2ba2`, his release 0.9.146:
+
+- `ed29cc8` Map reflect's copy destinations to OMP's skill folders (#489), taken whole.
+- `37db305` Stop watch-pr on the first read when a Claude Code cloud session refuses GraphQL (#488), taken whole.
+- `6904a7c` Add --expect-app so watch-pr waits on a CI app's queued check suite (#492), taken whole.
+- `278d485` Turn routing off with PSTACK_SESSION_HOOK=off where no user sheet survives (#491), taken whole. Its `tools/forks.json` reason for `setup-pstack/SKILL.md` conflicted with this fork's, which names the `codex:<model>` offers. The merged reason keeps both: his sentence about `PSTACK_SESSION_HOOK` follows this fork's `pstack-rinti` clause. The skill text itself merged clean.
+- `97d2ba2` Release 0.9.146 (#493), taken except its version numbers and its `CHANGES.md` heading. Its `reflect` sentence, its `github.ts` fix, its test, and its `tools/forks.json` reason for `reflect/SKILL.md` merged clean.
+
+Every manifest keeps this fork's `0.1.x` version, and this entry stands in for his `0.9.146` heading. His `tools/upstream.json` pin is `0b46ec3`. This fork's `aaeb0ea` was newer and stood through the merge.
+
+The upstream pin moves from `aaeb0ea` to `792440e`, still v0.15.46. The range has no pstack commits. Its five commits add the `third_party` Sabre Developer Hub plugin and update the Google Docs, Sheets, and Slides icons. No component of this port carries those paths:
+
+- `1db2314` feat(third_party): add the Sabre Developer Hub plugin
+- `d42aff0` Merge pull request #1307 from cursor/add-sabre-developer-hub-plugin
+- `874541b` google-docs: use Google's current Google Docs icon (#1312)
+- `e75af4d` google-sheets: use Google's current Google Sheets icon (#1313)
+- `792440e` google-slides: use Google's current Google Slides icon (#1314)
+
+Measured with `bun tools/sync.mjs pstack 792440e`: 458 unchanged, 57 forked and untouched, 38 excluded, nothing updated, merged, or conflicted. No denylist token was hit, the sync needed no substitution rule, and this fork's own forks are untouched. The forked total is 2,034 lines in 57 files, up from 1,959 because his watch-pr changes grow the forked `github.ts`, `policy.ts`, and `types.ts`. The upstream pin in `docs/reference.md` and the upstream Claude Code install link in `README.md` now name `792440e`.
+
 ## 0.1.39 - merge pstack-claude ce7df68
 
 Users get four fixes and one new runtime. On Codex, the SessionStart hook finds the plugin from its own path when `CLAUDE_PLUGIN_ROOT` is not in its environment, so a Codex 0.170.0 session no longer prints `SessionStart Failed`. When a PR already has reported checks, `watch-pr` verifies the head and the run count before it decides that a check suite is covered, and each failed or pending row that the check-suites read supplied carries `source: "check-suites"` in the verdict JSON. The suite lookup requires GitHub CLI 2.48 or later, and a CLI that rejects `--slurp` now exits 7 at once with an upgrade instruction, where it retried for about 12 minutes before. `check-playbooks.mjs` reads a setext heading and an ATX heading with a tab after its `#` run as headings. On native Windows, the `taskkill` that `/statechart`'s janitor runs opens no console window. DeepSeek Harness (DSH) can run pstack as a skills-only install through the shared `~/.agents/skills/` path, with [`dsh-tools.md`](plugins/pstack/skills/poteto-mode/references/dsh-tools.md) as its mapping. DSH gets no native bundle, SessionStart hook, or role sheet.
