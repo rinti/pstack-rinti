@@ -2,6 +2,21 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.41 - sync to upstream 7a58391 (v0.15.46)
+
+Users get no change in behavior. This release only moves the upstream pin, so the next sync starts from upstream's newest commit.
+
+This release merges nothing from pstack-claude. He has no commit after `97d2ba2`, which 0.1.40 merged.
+
+The upstream pin moves from `792440e` to `7a58391`, still v0.15.46. The range has no pstack commits. Its four commits change the `third_party` Tailscale and Gong plugins, which no component of this port carries:
+
+- `0b69428` tailscale: say the bot computer reaches tailnet hosts by full name only and split DNS needs nothing turned on.
+- `878486c` tailscale: look up a 100.x address's full name with tailscale_check_host before using it on the bot computer.
+- `ec5dbf8` Merge pull request #1305 from cursor/eliu/tailscale-guide-bot-computer
+- `7a58391` gong: fix logo
+
+Measured with `bun tools/sync.mjs pstack 7a58391`: 458 unchanged, 57 forked and untouched, 38 excluded, nothing updated, merged, or conflicted. No denylist token was hit, the sync needed no substitution rule, and this fork's own forks are untouched. The forked total stays at 2,034 lines in 57 files. The upstream pin in `docs/reference.md` and the upstream Claude Code install link in `README.md` now name `7a58391`.
+
 ## 0.1.40 - merge pstack-claude 97d2ba2, sync to upstream 792440e (v0.15.46)
 
 Users get four fixes from pstack-claude. `watch-pr --expect-app <slug>` names a GitHub App that runs the repository's CI, so the watcher waits on that app's queued check suite with no runs instead of reading it as clean CI. The ready proof and status rows list each suite the watcher did not count as `queuedWithoutRuns`. In a Claude Code cloud session, where the GitHub proxy refuses GraphQL, `watch-pr` stops with exit 7 on its first read and reports a `graphql-refused` failure, where it retried for minutes before. `docs/reference.md` says that `watch-pr` and `ship-pr` need GraphQL and how to read the PR over REST instead. `PSTACK_SESSION_HOOK=off` turns routing off where no user sheet survives between sessions, such as a Claude Code cloud session: `session-start.sh` and `session-start.ps1` check the variable before the sheet, and `setup-pstack` and `poteto-help` say so. On OMP, `reflect` writes an edited pstack skill to OMP's skill folders, and on every runtime it says before approval that the edited copy is a separate skill that pstack's routing can keep bypassing.
