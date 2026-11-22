@@ -2,6 +2,24 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.42 - merge pstack-claude d4a3f16
+
+Users get four changes from pstack-claude. With a `pi agent host: hc` line in the sheet, and a Pi session running inside herdr-core, the Pi `agent` tool runs each child as an interactive `pi` in its own `hc` terminal, where the user can watch it and type into it. Without the line, or outside herdr-core, the RPC path is unchanged. On Pi and Codex, `reflect` copies an edited pstack skill to a folder that runtime loads: `.pi/skills/<skill>/` or the Pi agent directory's `skills/` folder on Pi, and `.agents/skills/<skill>/` or `${CODEX_HOME:-~/.codex}/skills/<skill>/` on Codex. Before, it wrote to Claude Code's folders. On OpenCode, `reflect` reads the whole session through `opencode session export`. When `watch-pr` exits 7 with `graphql-refused` in a Claude Code cloud session, the babysit playbook points the agent at the REST reads in `cloud-session-pr-reads.md`.
+
+This release merges pstack-claude through `d4a3f16`, his release 0.9.147:
+
+- `b1b9f18` Restyle the pstack overview to match agent-formal-verify (#502), taken whole.
+- `889230d` Read the OpenCode session for reflect through opencode session export (#501), taken whole.
+- `02f3546` Name the REST reads for a PR in a Claude Code cloud session (#497), taken whole. Its `tools/forks.json` reason for `babysit.md` conflicted with this fork's, which names the bug-class and pre-existing finding rules. The merged reason keeps both: his `graphql-refused` sentence comes first, then this fork's `pstack-rinti` sentence. The playbook text itself merged clean.
+- `ec1e2a3` Map reflect's copy destinations to Pi's and Codex's skill folders (#498), taken whole.
+- `e90ef30` Pi: run agents in herdr-core terminals with a pi agent host: hc sheet line (#447), taken whole.
+- `fc7f021` Expect the resolver's model in the live Pi panel test (#504), taken whole.
+- `d4a3f16` Release 0.9.147 (#505), taken except its version numbers and its `CHANGES.md` heading.
+
+Every manifest keeps this fork's `0.1.x` version, and this entry stands in for his `0.9.147` heading. His `tools/upstream.json` pin is still `0b46ec3`. This fork's `7a58391` is newer and stood through the merge, and it already equals upstream's newest commit, so this release runs no upstream sync.
+
+Measured with `bun tools/sync.mjs pstack 7a58391 --dry-run`: 458 unchanged, 57 forked and untouched, 38 excluded, nothing updated, merged, or conflicted. The forked total stays at 2,034 lines in 57 files, and this fork's own forks are untouched.
+
 ## 0.1.41 - sync to upstream 7a58391 (v0.15.46)
 
 Users get no change in behavior. This release only moves the upstream pin, so the next sync starts from upstream's newest commit.
