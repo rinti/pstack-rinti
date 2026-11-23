@@ -2,6 +2,31 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.43 - merge pstack-claude 81603a4
+
+Users get five changes from pstack-claude. `watch-pr` now reports an Actions workflow that failed at startup, before it created a run, as failing CI. Before, such a head read as clean. In a Claude Code cloud session, where GitHub refuses GraphQL, `fix-ci` reads a head's check runs and commit statuses over REST, and the shipping playbook stops at merge-ready and reports the limit. The list reads in `cloud-session-pr-reads.md` now ask for 100 rows a page and pass `--paginate --slurp`, where before they returned only the first 30 rows. Whether the cloud proxy serves a second page is untested. `setup-pstack` names the runtimes where `PSTACK_SESSION_HOOK=off` works, instead of claiming it works on all of them. On Pi, the extension reads a project's committed `.claude/pstack-models.md`, as Claude Code does, including its `pi agent host: hc` line. The repo also gains `open-pstack`, his npm and Homebrew installer.
+
+This release merges pstack-claude through `81603a4`, his releases 0.9.148 to 0.9.151 and one unreleased change:
+
+- `4837724` Surface Actions startup failures in watch-pr (#484), taken whole.
+- `414e488` Read a project's committed pstack-models.md on Pi, as on Claude Code (#506), taken whole. Its `tools/forks.json` reason for `setup-pstack/SKILL.md` conflicted with this fork's, which names the `codex:<model>` entries. The merged reason keeps his "there and on Pi" and this fork's `pstack-rinti` clause.
+- `8d69186` Release 0.9.148 (#511), taken except its version numbers and its `CHANGES.md` heading.
+- `fdfe687` Add open-pstack, an npm and Homebrew installer for every harness (#510), taken whole. The installer still installs `pstack@pstack-claude` from his repository, not this fork's marketplace. It is his tooling, and this fork publishes no npm package. The `Release npm` workflow it adds runs on a `v*` tag push and needs npm trusted publishing, which this fork has not set up.
+- `313512e` Release 0.9.149 (#513), taken except its version numbers and its `CHANGES.md` heading.
+- `de6a854` Scope PSTACK_SESSION_HOOK claims in setup-pstack to the runtimes that read it (#499), taken whole.
+- `6b63a37` Release 0.9.150 (#514), taken except its version numbers and its `CHANGES.md` heading.
+- `231feff` Point shipping and fix-ci at the cloud-session REST reads (#515), taken whole.
+- `36b090e` Release 0.9.151 (#517), taken except its version numbers and its `CHANGES.md` heading.
+- `b26c2b0` Paginate the cloud-session list reads and link babysit's pointers (#519), taken whole.
+- `8d2d4bf` Paginate the cloud-session commit statuses read (#521), taken whole.
+- `45da1de` Link poteto-mode's bugbot-triage pointer (#522), taken whole. In `babysit.md` its link conflicted with this fork's bug-class and pre-existing finding sentences on the same line. The merged line has his link and keeps both of this fork's sentences.
+- `2755973` Run the open-pstack CLI tests on Windows (#523), taken whole.
+- `81603a4` Read the Pi agent host from the project sheet and ask git once per directory (#525), taken whole except its `CHANGES.md` paragraph, which has no release heading yet. This entry describes it.
+
+Every manifest keeps this fork's `0.1.x` version, and the generator now also stamps it into `installer/package.json`. His `tools/upstream.json` pin is still `0b46ec3`. This fork's `7a58391` is newer and stood through the merge, and it already equals upstream's newest commit, so this release runs no upstream sync.
+
+Measured with `bun tools/sync.mjs pstack 7a58391 --dry-run`: 458 unchanged, 57 forked and untouched, 38 excluded, nothing updated, merged, or conflicted. The forked total is 2,014 changed lines in 57 files, and this fork's own forks are kept.
+
 ## 0.1.42 - merge pstack-claude d4a3f16
 
 Users get four changes from pstack-claude. With a `pi agent host: hc` line in the sheet, and a Pi session running inside herdr-core, the Pi `agent` tool runs each child as an interactive `pi` in its own `hc` terminal, where the user can watch it and type into it. Without the line, or outside herdr-core, the RPC path is unchanged. On Pi and Codex, `reflect` copies an edited pstack skill to a folder that runtime loads: `.pi/skills/<skill>/` or the Pi agent directory's `skills/` folder on Pi, and `.agents/skills/<skill>/` or `${CODEX_HOME:-~/.codex}/skills/<skill>/` on Codex. Before, it wrote to Claude Code's folders. On OpenCode, `reflect` reads the whole session through `opencode session export`. When `watch-pr` exits 7 with `graphql-refused` in a Claude Code cloud session, the babysit playbook points the agent at the REST reads in `cloud-session-pr-reads.md`.
