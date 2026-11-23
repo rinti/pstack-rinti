@@ -1,4 +1,5 @@
 import type { ExtensionContext } from "@earendil-works/pi-coding-agent";
+import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { basename, dirname, join } from "node:path";
@@ -93,10 +94,35 @@ export function parseSheet(text: string): Sheet {
   };
 }
 
-export function readSheet(agentDir: string): Sheet | undefined {
+// A sheet committed with the project replaces the user's in that project, as the
+// Claude session hook does: the git root of the working directory, or the
+// directory itself when git cannot say (not a repository, or no git).
+// A directory's git root does not change within a process, so it is asked once;
+// the sheet itself is read again on every call.
+const gitRoots = new Map<string, string>();
+function projectRoot(cwd: string): string {
+  const cached = gitRoots.get(cwd);
+  if (cached !== undefined) return cached;
+  let root = cwd;
+  try {
+    root = execFileSync("git", ["rev-parse", "--show-toplevel"], { cwd, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim();
+  } catch {
+    // The directory itself is the root, as in the session hook.
+  }
+  gitRoots.set(cwd, root);
+  return root;
+}
+
+function projectSheetFile(cwd: string): string | undefined {
+  const file = join(projectRoot(cwd), ".claude", "pstack-models.md");
+  return existsSync(file) ? file : undefined;
+}
+
+export function readSheet(agentDir: string, cwd?: string): Sheet | undefined {
+  const file = (cwd ? projectSheetFile(cwd) : undefined) ?? join(agentDir, "pstack-models.md");
   let bytes: Buffer;
   try {
-    bytes = readFileSync(join(agentDir, "pstack-models.md"));
+    bytes = readFileSync(file);
   } catch {
     // An absent or unreadable sheet leaves the defaults in place, as the session hooks do.
     return undefined;

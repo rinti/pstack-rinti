@@ -87,21 +87,31 @@ The Claude Code, Codex, and GitHub Copilot plugins load the same short [routing 
 
 Smaller tasks proceed directly. The full skill loads when invoked, and explicit user instructions take precedence.
 
-To disable routing on runtimes that support the session hook setting, run `setup-pstack` and turn it off, or write `session hook: off` in the runtime's sheet at the path in [setup-pstack's runtime table](../plugins/pstack/skills/setup-pstack/references/runtimes.md). In Claude Code, use `/pstack:setup-pstack`. On Claude Code, a project's committed `.claude/pstack-models.md` replaces the user's sheet in that project, so `session hook: off` there turns routing off for that project alone. A Claude Code cloud session starts with an empty home, so the user's sheet does not reach it. Set the environment variable `PSTACK_SESSION_HOOK=off` in the cloud environment instead. The session hook checks that variable before the sheet on Claude Code, and on Codex, GitHub Copilot, Muse, and Antigravity when the runtime passes the variable to its hooks. MiniMax Code passes its hooks a fixed set of variables, so use the sheet there. The OMP, OpenCode, and Pi plugins read only the sheet. Without the setting, routing stays on. On OMP this setting applies across profiles. On Kimi, disable the plugin to stop its routing instruction. Grok's routing hint is not controlled by the session hook setting.
+To disable routing on runtimes that support the session hook setting, run `setup-pstack` and turn it off, or write `session hook: off` in the runtime's sheet at the path in [setup-pstack's runtime table](../plugins/pstack/skills/setup-pstack/references/runtimes.md). In Claude Code, use `/pstack:setup-pstack`. On Claude Code and Pi, a project's committed `.claude/pstack-models.md` replaces the user's sheet in that project, so `session hook: off` there turns routing off for that project alone. A Claude Code cloud session starts with an empty home, so the user's sheet does not reach it. Set the environment variable `PSTACK_SESSION_HOOK=off` in the cloud environment instead. The session hook checks that variable before the sheet on Claude Code, and on Codex, GitHub Copilot, Muse, and Antigravity when the runtime passes the variable to its hooks. MiniMax Code passes its hooks a fixed set of variables, so use the sheet there. The OMP, OpenCode, and Pi plugins read only the sheet. Without the setting, routing stays on. On OMP this setting applies across profiles. On Kimi, disable the plugin to stop its routing instruction. Grok's routing hint is not controlled by the session hook setting.
 
 Skills-only installs and other runtimes do not include these integrations. Request `poteto-mode` explicitly, or add a standing instruction to the runtime's instruction file.
 
 ### Shared skills installation
 
-Use this path for Prime Agent, Gemini CLI, DeepSeek Harness, or a skills-only Codex installation. Run the script under [Other harnesses](../README.md#other-harnesses) in the README, which clones the repository and links its skills into `~/.agents/skills/`.
+Use this path for Prime Agent, Gemini CLI, DeepSeek Harness, or a skills-only Codex installation. Run `npx open-pstack --only skills`, which links each skill into `~/.agents/skills/` from the copy [open-pstack](#install-with-open-pstack) stages. Or run the script under [Other harnesses](../README.md#other-harnesses) in the README, which clones the repository and links its skills from the clone.
 
-Keep all skill directories, including the principle references. Leave the clone at this path while the links are installed.
+Keep all skill directories, including the principle references. Leave the clone or the staged copy in place while the links are installed.
 
 ### Manage linked skills
 
 If a destination already exists, inspect it before replacing it. The installation skips existing files, directories, and links.
 
-To update, run `git pull` in the clone that the links point to, then run the install loop again. A pull updates skills that are already linked but does not link new skill directories. To uninstall a linked skill, remove its link at `~/.agents/skills/<name>`. This removes it from every runtime using that directory.
+To update links made by `open-pstack`, upgrade it and run `open-pstack --only skills` again. To update links into a clone, run `git pull` in the clone, then run the install loop again. A pull updates skills that are already linked but does not link new skill directories. To uninstall a linked skill, remove its link at `~/.agents/skills/<name>`. This removes it from every runtime using that directory.
+
+### Install with open-pstack
+
+`open-pstack` is published to npm and to the `michael-denyer/tap` Homebrew tap. It runs the README recipe of each harness you pick; see [Install](../README.md#install) for its options. It has no dependencies.
+
+Harnesses that install from a local path get the plugin copy that ships with `open-pstack`, staged at `~/.local/share/open-pstack/pstack`, or at `open-pstack/pstack` under `XDG_DATA_HOME` when that is set. The npm cache and Homebrew's versioned directories change on every upgrade, so a fixed path keeps the shared skills links and harness registrations valid. Each run copies the plugin beside the staged copy and then swaps it in, so a rerun ends in the same state and a failed copy leaves the previous one in place. A run skips skills that already have a link and a MiniMax Code plugin directory that already exists.
+
+The staged copy matches the installer's version, so upgrade the installer before rerunning it. Rerunning `claude plugin install` reports pstack as already installed and leaves its version unchanged. Update plugins that a harness installed through that harness's own update command.
+
+To uninstall, remove pstack from each harness with its own command. Remove the links in `~/.agents/skills` that point into the staged copy, then delete `~/.local/share/open-pstack`. Finally run `npm uninstall -g open-pstack` or `brew uninstall open-pstack`.
 
 ### Install with the skills CLI
 
