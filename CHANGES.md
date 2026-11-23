@@ -2,6 +2,20 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.44 - merge pstack-claude 66181d3
+
+Users get three changes from pstack-claude. In a Claude Code cloud session, whose GitHub proxy refuses GraphQL, `watch-pr` now reads the PR over REST instead of stopping with exit 7. At the first refusal it switches to a reader that gets the PR's facts, review threads, and checks over REST, and any partial read is a query error, so it cannot report ready. The babysit and shipping playbooks say the watcher still reports status there; `ship-pr` still needs GraphQL, so Shipping still stops at merge-ready in a cloud session. On OpenCode 2, the plugin registers the four bundled agents as subagents under their Claude Code names, such as `pstack:poteto-agent`, so a skill's `subagent_type` works without entries in `opencode.json`. On Windows, `open-pstack` caret-escapes each argument it passes to a `.cmd` or `.bat` harness shim, so a path with `%NAME%` in it reaches the harness unchanged.
+
+This release merges pstack-claude through `66181d3`, his releases 0.9.152 and 0.9.153:
+
+- `4104a31` Register pstack's bundled agents in the OpenCode plugin (#524), taken whole.
+- `1b335d9` Release 0.9.152 (#527), taken except its version numbers and its `CHANGES.md` heading.
+- `f3b4ac4` Escape harness shim arguments for cmd.exe, %NAME% included (#528), taken whole. It merged without touching this fork's `rinti/pstack-rinti` harness list.
+- `e78f3a6` Read PRs over REST in watch-pr when a cloud session refuses GraphQL (#529), taken whole. Its one-line edit to `babysit.md` merged beside this fork's bug-class and pre-existing finding sentences, which stand.
+- `66181d3` Release 0.9.153 (#530), taken except its version numbers and its `CHANGES.md` heading.
+
+Every manifest keeps this fork's `0.1.x` version. His `tools/upstream.json` pin is still `0b46ec3`. This fork's `7a58391` is newer and stood through the merge, and it already equals upstream's newest commit, so this release runs no upstream sync. `bun tools/sync.mjs pstack 7a58391 --dry-run` reports 458 unchanged, 57 forked and untouched, 38 excluded, and nothing updated, merged, or conflicted.
+
 ## 0.1.43 - merge pstack-claude 81603a4
 
 Users get five changes from pstack-claude. `watch-pr` now reports an Actions workflow that failed at startup, before it created a run, as failing CI. Before, such a head read as clean. In a Claude Code cloud session, where GitHub refuses GraphQL, `fix-ci` reads a head's check runs and commit statuses over REST, and the shipping playbook stops at merge-ready and reports the limit. The list reads in `cloud-session-pr-reads.md` now ask for 100 rows a page and pass `--paginate --slurp`, where before they returned only the first 30 rows. Whether the cloud proxy serves a second page is untested. `setup-pstack` names the runtimes where `PSTACK_SESSION_HOOK=off` works, instead of claiming it works on all of them. On Pi, the extension reads a project's committed `.claude/pstack-models.md`, as Claude Code does, including its `pi agent host: hc` line. The repo also gains `open-pstack`, his installer, which finds the agent harnesses on `PATH` and runs each one's README recipe. In this fork it runs from a clone and installs this fork.
