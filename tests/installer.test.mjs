@@ -193,19 +193,19 @@ describe("open-pstack CLI", () => {
     const s = sandbox();
     const r = s.open("--yes");
     expect(r.code).toBe(0);
-    const repo = "michael-denyer/pstack-claude";
+    const repo = "rinti/pstack-rinti";
     expect(s.calls()).toEqual([
       `claude plugin marketplace add ${repo}`,
-      "claude plugin install pstack@pstack-claude",
+      "claude plugin install pstack@pstack-rinti",
       `codex plugin marketplace add ${repo}`,
-      "codex plugin add pstack@pstack-claude",
+      "codex plugin add pstack@pstack-rinti",
       `pi install git:github.com/${repo}`,
       `copilot plugin marketplace add ${repo}`,
-      "copilot plugin install pstack@pstack-claude",
+      "copilot plugin install pstack@pstack-rinti",
       `muse plugins install ${s.staged}`,
       "muse plugins approve pstack",
       `omp plugin marketplace add ${repo}`,
-      "omp plugin install --scope user pstack@pstack-claude",
+      "omp plugin install --scope user pstack@pstack-rinti",
       `grok plugin install ${s.staged} --trust`,
       "grok plugin enable pstack",
       `opencode plugin add github:${repo}#main`,
@@ -260,8 +260,8 @@ describe("open-pstack CLI", () => {
     const r = s.open("--yes");
     expect(r.code).toBe(1);
     expect(r.out).toMatch(/claude\s+failed \(exit 3\)/);
-    expect(s.calls()).not.toContain("claude plugin install pstack@pstack-claude");
-    expect(s.calls()).toContain("pi install git:github.com/michael-denyer/pstack-claude");
+    expect(s.calls()).not.toContain("claude plugin install pstack@pstack-rinti");
+    expect(s.calls()).toContain("pi install git:github.com/rinti/pstack-rinti");
     expect(existsSync(join(s.minimax, "plugins", "pstack", ".claude-plugin", "plugin.json"))).toBe(true);
   });
 
@@ -269,7 +269,7 @@ describe("open-pstack CLI", () => {
     const s = sandbox();
     const r = s.open("--only", "pi");
     expect(r.code).toBe(0);
-    expect(s.calls()).toEqual(["pi install git:github.com/michael-denyer/pstack-claude"]);
+    expect(s.calls()).toEqual(["pi install git:github.com/rinti/pstack-rinti"]);
     expect(existsSync(s.staged)).toBe(false);
   });
 
@@ -277,7 +277,7 @@ describe("open-pstack CLI", () => {
     const s = sandbox();
     const r = s.open("--yes", "--dry-run");
     expect(r.code).toBe(0);
-    expect(r.out).toContain("claude plugin install pstack@pstack-claude");
+    expect(r.out).toContain("claude plugin install pstack@pstack-rinti");
     expect(r.out).toContain(`muse plugins install ${s.staged}`);
     expect(s.calls()).toEqual([]);
     expect(readdirSync(s.home)).toEqual([]);

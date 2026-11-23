@@ -1,6 +1,6 @@
 import { join } from "node:path";
 
-const REPO = "michael-denyer/pstack-claude";
+const REPO = "rinti/pstack-rinti";
 const SKILLS_LABEL =
   "~/.agents/skills (Gemini CLI, Prime Agent, DeepSeek Harness, skills-only Codex)";
 
@@ -17,7 +17,7 @@ export const HARNESSES = [
     needsBundle: false,
     steps: () => [
       run("claude", "plugin", "marketplace", "add", REPO),
-      run("claude", "plugin", "install", "pstack@pstack-claude"),
+      run("claude", "plugin", "install", "pstack@pstack-rinti"),
     ],
   },
   {
@@ -27,7 +27,7 @@ export const HARNESSES = [
     needsBundle: false,
     steps: () => [
       run("codex", "plugin", "marketplace", "add", REPO),
-      run("codex", "plugin", "add", "pstack@pstack-claude"),
+      run("codex", "plugin", "add", "pstack@pstack-rinti"),
     ],
   },
   {
@@ -44,7 +44,7 @@ export const HARNESSES = [
     needsBundle: false,
     steps: () => [
       run("copilot", "plugin", "marketplace", "add", REPO),
-      run("copilot", "plugin", "install", "pstack@pstack-claude"),
+      run("copilot", "plugin", "install", "pstack@pstack-rinti"),
     ],
   },
   {
@@ -64,7 +64,7 @@ export const HARNESSES = [
     needsBundle: false,
     steps: () => [
       run("omp", "plugin", "marketplace", "add", REPO),
-      run("omp", "plugin", "install", "--scope", "user", "pstack@pstack-claude"),
+      run("omp", "plugin", "install", "--scope", "user", "pstack@pstack-rinti"),
     ],
   },
   {
