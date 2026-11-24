@@ -2,6 +2,21 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.45 - sync to upstream 005d8f6 (v0.15.48), add /reframe
+
+Users get `/reframe`, a new skill for when you can't name what you're building. It starts from your files and your own words. If your description could name more than one problem, it lists the two or three it could be, with the sign that tells each apart, and picks the likeliest. Then it gives 8 to 12 expert terms ranked by how much each would change what you build, each tied to the part of your description it names and to a real project whose link it opened and checked. It borrows terms from 2 or 3 neighboring fields that solved the same problem under other names, says where each analogy breaks, and rewrites your description with the new words. `/poteto-help` routes to it, and `docs/reference.md` lists it.
+
+This release merges nothing from pstack-claude. He has no commit after `66181d3`, which 0.1.44 merged.
+
+The upstream pin moves from `7a58391` (v0.15.46) to `005d8f6` (v0.15.48). The range has two pstack commits:
+
+- `2dd5c0c` feat(pstack): add /reframe to learn the expert words for what you're building (#1324)
+- `9e278fe` feat(pstack): have /reframe list the problems a vague description could be (#1326)
+
+Its other commits change the `third_party` X, FreshBooks, and Campfire plugins, which no component of this port carries: `cdd05a9`, `1b8319c`, `0631889`, `3b74881`, `ffec83b`, `96af3b7`, `04cfc0f`, and `005d8f6`.
+
+Measured with `bun tools/sync.mjs pstack 005d8f6`: 458 unchanged, 38 excluded, 1 merged, 1 added, nothing updated or conflicted. No denylist token was hit, and the sync needed no substitution rule. The added file is `skills/reframe/SKILL.md`. The derive step drops upstream's `disable-model-invocation: true`, as it does for `/sharpen` and `/in-your-own-words`. The merged file is `skills/poteto-help/SKILL.md`: upstream's new `/reframe` row in the routing table merged beside the port's fork without a conflict, and the fork's `why` still holds. This fork's own forks are untouched, and `tools/forks.json` does not change. The forked total is 2,015 lines in 57 files. The upstream pin in `docs/reference.md` and the upstream Claude Code install link in `README.md` now name `005d8f6`. `NOTICE.md` credits `/reframe` to upstream `2dd5c0c`, and the Muse manifest lists it.
+
 ## 0.1.44 - merge pstack-claude 66181d3
 
 Users get three changes from pstack-claude. In a Claude Code cloud session, whose GitHub proxy refuses GraphQL, `watch-pr` now reads the PR over REST instead of stopping with exit 7. At the first refusal it switches to a reader that gets the PR's facts, review threads, and checks over REST, and any partial read is a query error, so it cannot report ready. The babysit and shipping playbooks say the watcher still reports status there; `ship-pr` still needs GraphQL, so Shipping still stops at merge-ready in a cloud session. On OpenCode 2, the plugin registers the four bundled agents as subagents under their Claude Code names, such as `pstack:poteto-agent`, so a skill's `subagent_type` works without entries in `opencode.json`. On Windows, `open-pstack` caret-escapes each argument it passes to a `.cmd` or `.bat` harness shim, so a path with `%NAME%` in it reaches the harness unchanged.
