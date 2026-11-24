@@ -4,7 +4,7 @@ This file is the release changelog, with one `## <version> - <title>` entry per 
 
 ## 0.1.45 - sync to upstream 005d8f6 (v0.15.48), add /reframe
 
-Users get `/reframe`, a new skill for when you can't name what you're building. It starts from your files and your own words. If your description could name more than one problem, it lists the two or three it could be, with the sign that tells each apart, and picks the likeliest. Then it gives 8 to 12 expert terms ranked by how much each would change what you build, each tied to the part of your description it names and to a real project whose link it opened and checked. It borrows terms from 2 or 3 neighboring fields that solved the same problem under other names, says where each analogy breaks, and rewrites your description with the new words. `/poteto-help` routes to it, and `docs/reference.md` lists it.
+Users get `/reframe`, a new skill for when you can't name what you're building. It starts from your files and your own words. If your description could name more than one problem, it lists the two or three it could be, with the sign that tells each apart, and picks the likeliest. Then it gives 8 to 12 expert terms ranked by how much each would change what you build, each tied to the part of your description it names and to a real project whose link it opened and checked. It borrows terms from 2 or 3 neighboring fields that solved the same problem under other names, says where each analogy breaks, and rewrites your description with the new words. `/poteto-help` routes to it, and `docs/reference.md` lists it and now counts 68 skill directories, 44 of them public.
 
 This release merges nothing from pstack-claude. He has no commit after `66181d3`, which 0.1.44 merged.
 
