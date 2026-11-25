@@ -2,6 +2,29 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.46 - merge pstack-claude 103a68d, sync to upstream 41e4009 (v0.15.48)
+
+Users get three Codex fixes from pstack-claude. The `SessionStart` routing hook now also runs when a chat is forked, so a fork loads the routing instruction and honours `session hook: off` as a new session does. Codex asks to review the hook again, as after every update. The Codex mapping names Codex's native agent roles: `general-purpose` maps to `default` and exploration maps to `explorer`, a reviewer that should see only its brief is spawned with `fork_context: false` or `fork_turns: "none"`, each writer gets its own worktree because `spawn_agent` has no isolation argument, and `request_user_input` is used only where the mode and client deliver it. Codex ignores `user-invocable: false`, so it listed all 24 `principle-*` leaves in its skill catalog. The generator now writes an `agents/openai.yaml` with `policy.allow_implicit_invocation: false` into every principle leaf, and the Codex mapping gives the path to read a leaf by. `figure-it-out` and `typescript-best-practices` name principle leaves, so they now carry the Codex, GitHub Copilot, and Antigravity mapping preambles. Skill text from upstream does not change in this release.
+
+This release merges pstack-claude through `103a68d`, his releases 0.9.154 and 0.9.155:
+
+- `d97205a` Replace every wildcard in the Pi typecheck paths test (#534), taken whole.
+- `595c0ca` Add Scorecard and dependency review workflows (#532), taken whole.
+- `b2f7b9e` Run Codex session routing when a chat is forked (#542), taken whole.
+- `734e473` Map Codex agent roles, isolation, and structured questions (#540), taken whole. Its Codex paragraph in `docs/reference.md` conflicted with this fork's. His stands: the `[features] multi_agent = true` block is gone, because current Codex enables subagents by default, and the sentence names `architect` again where this fork had written `swarm` since 0.1.33.
+- `e5adc4f` Keep principle leaves out of Codex's implicit skill list (#544), taken whole.
+- `e7570a0` Release 0.9.154 (#546), taken except its version numbers and its `CHANGES.md` heading.
+- `103a68d` Sync to upstream ca782ed (v0.15.48): add /reframe (#547), taken in part. His `skills/reframe/SKILL.md` and his `/reframe` row in `poteto-help` equal what 0.1.45 already shipped. His `/reframe` row in `docs/reference.md` replaces this fork's wording, beside this fork's `/sharpen` row, and his Muse note says 68 skills where this fork's said 67. His `NOTICE.md` row is not taken, because this fork's row already credits `/reframe` at `2dd5c0c`, the commit that added it. His version numbers and his `CHANGES.md` heading are not taken.
+
+Every manifest keeps this fork's `0.1.x` version, and this entry stands in for his `0.9.154` and `0.9.155` headings. The merge conflicted in the version line of the eleven manifests and `VERSION`, in `CHANGES.md`, `NOTICE.md`, and `README.md`, in four places in `docs/reference.md`, and in the `pstack` pin of `tools/upstream.json`. His pin, `ca782ed`, is newer than this fork's `005d8f6` and stood. The two pins hold the same pstack text, so no skill file conflicted. His commits change neither `tools/substitutions.json` nor `tools/forks.json`, so every rule and fork entry of this fork's stands.
+
+The upstream pin then moves from `ca782ed` to `41e4009`, still v0.15.48. The range has no pstack commits. Its two commits add the `third_party` Jobber plugin, which no component of this port carries:
+
+- `6f31f0e` feat(third_party): add the Jobber plugin
+- `41e4009` Merge pull request #1337 from djiang-jq/djiang/add-jobber
+
+Measured with `bun tools/sync.mjs pstack 41e4009`: 459 unchanged, 57 forked and untouched, 38 excluded, nothing updated, merged, or conflicted. No denylist token was hit, the sync needed no substitution rule, and this fork's own forks are untouched. The forked total is 2,015 lines in 57 files. The upstream pin in `docs/reference.md` and the upstream Claude Code install link in `README.md` now name `41e4009`.
+
 ## 0.1.45 - sync to upstream 005d8f6 (v0.15.48), add /reframe
 
 Users get `/reframe`, a new skill for when you can't name what you're building. It starts from your files and your own words. If your description could name more than one problem, it lists the two or three it could be, with the sign that tells each apart, and picks the likeliest. Then it gives 8 to 12 expert terms ranked by how much each would change what you build, each tied to the part of your description it names and to a real project whose link it opened and checked. It borrows terms from 2 or 3 neighboring fields that solved the same problem under other names, says where each analogy breaks, and rewrites your description with the new words. `/poteto-help` routes to it, and `docs/reference.md` lists it and now counts 68 skill directories, 44 of them public.
