@@ -2,6 +2,37 @@
 
 This file is the release changelog, with one `## <version> - <title>` entry per release, newest first. The Cursor-to-Claude rewrite rules live in [`tools/substitutions.json`](tools/substitutions.json), and the [sync boundary](CONTRIBUTING.md#the-sync-boundary) in `CONTRIBUTING.md` defines how a change to upstream's skill content is declared.
 
+## 0.1.47 - merge pstack-claude 1ab6b82, sync to upstream b7b93c3 (v0.15.48)
+
+Users get these changes from pstack-claude. `watch-pr` reports a merge conflict (exit 2) at once when GitHub marks the current head as conflicting and has reported no checks for it, in the default watch, `--queued-stack`, and `--status-only`. Before, it waited for checks that would never run. A status read now retries when either merge field changes between its two reads, except a field whose first value was unknown. On Pi, a `pi agent host: t3` line in the sheet runs each agent without a worktree as a T3 Code child thread when the session runs inside T3 Code. Worktree agents, `readonly: true` agents, and agents at the depth limit stay local processes. Outside T3 Code the line has no effect. With `pi agent host: hc`, a resumed session now ends an agent whose launching pi died before its pid was recorded. On Codex, skills pass `model` and `reasoning_effort` to `spawn_agent` only when its exposed schema has each field, and the Reasoning effort paragraph of every skill now says so. `codex-tools.md` maps `wait_agent` and `interrupt_agent` semantics, and it says how to save a resume checkpoint under the `workspace-write` sandbox. The repo also gets a gitleaks secret scan in CI and in the pre-commit hooks. Skill text from upstream does not change in this release.
+
+This release merges pstack-claude through `1ab6b82`, his releases 0.9.156, 0.9.157, and 0.9.158:
+
+- `2f6de89` ci: bump hashgraph-online/ai-plugin-scanner-action from 1.2.816 to 1.2.817 (#552), taken whole.
+- `460ecf1` Map Codex agent wait and interrupt semantics (#551), taken whole.
+- `eca10ca` Pi: find an hc agent's terminal on restore when its pid was never recorded (#553), taken whole.
+- `08e8285` Gate Codex spawn model and reasoning_effort on the exposed schema (#548), taken whole. It changes the generated Reasoning effort paragraph, so this fork's forked `arena`, `interrogate`, and `poteto-mode` skills get the new Codex sentence. Their own changes are untouched.
+- `bc62fe7` Release 0.9.156 (#556), taken except its version numbers and its `CHANGES.md` heading.
+- `a3edd28` Document how Codex saves resume checkpoints under workspace-write (#557), taken whole.
+- `4b809ea` Release 0.9.157 (#558), taken except its version numbers and its `CHANGES.md` heading.
+- `c4ff74b` Pi: run agents as T3 Code child threads with a pi agent host: t3 sheet line (#554), taken whole.
+- `039a757` Keep read-only and depth-limit agents off the T3 host (#564), taken whole.
+- `2a06e4b` Release 0.9.158: report known PR conflicts without waiting for checks (#561), taken except its version numbers and its `CHANGES.md` heading. Its rewrite of the `watch-pr/policy.ts` fork's `why` in `tools/forks.json` stands.
+- `1ab6b82` Add gitleaks secret scanning (#562), taken whole.
+
+Every manifest keeps this fork's `0.1.x` version, and this entry stands in for his `0.9.156` to `0.9.158` headings. The merge conflicted only in the version line of the eleven manifests and `VERSION`, and in `CHANGES.md`. This fork's side stood in each. His pin, `ca782ed`, is older than this fork's `41e4009`, and the two hold the same pstack text, so this fork's pin stood and no skill file conflicted. His commits do not change `tools/substitutions.json`, so every rule of this fork's stands, and every fork entry that names pstack-rinti is untouched.
+
+The upstream pin then moves from `41e4009` to `b7b93c3`, still v0.15.48. The range has no pstack commits. Its commits add and then revert the `third_party` Nooks plugin and add the `third_party` folk plugin, which no component of this port carries:
+
+- `dc2202b` feat(third_party): add the Nooks plugin
+- `b96ec1e` Merge pull request #1345 from cursor/add-nooks-plugin
+- `6929017` Revert "feat(third_party): add the Nooks plugin"
+- `b1fbf4b` Merge pull request #1346 from cursor/revert-1345-add-nooks-plugin
+- `fd72763` feat(third_party): add the folk plugin
+- `b7b93c3` Merge pull request #1349 from cursor/cursor/add-folk-plugin-87f8
+
+Measured with `bun tools/sync.mjs pstack b7b93c3`: 459 unchanged, 57 forked and untouched, 38 excluded, nothing updated, merged, or conflicted. No denylist token was hit, the sync needed no substitution rule, and this fork's own forks are untouched. The forked total is 2,034 lines in 57 files. The upstream pin in `docs/reference.md` and the upstream Claude Code install link in `README.md` now name `b7b93c3`.
+
 ## 0.1.46 - merge pstack-claude 103a68d, sync to upstream 41e4009 (v0.15.48)
 
 Users get three Codex fixes from pstack-claude. The `SessionStart` routing hook now also runs when a chat is forked, so a fork loads the routing instruction and honours `session hook: off` as a new session does. Codex asks to review the hook again, as after every update. The Codex mapping names Codex's native agent roles: `general-purpose` maps to `default` and exploration maps to `explorer`, a reviewer that should see only its brief is spawned with `fork_context: false` or `fork_turns: "none"`, each writer gets its own worktree because `spawn_agent` has no isolation argument, and `request_user_input` is used only where the mode and client deliver it. Codex ignores `user-invocable: false`, so it listed all 24 `principle-*` leaves in its skill catalog. The generator now writes an `agents/openai.yaml` with `policy.allow_implicit_invocation: false` into every principle leaf, and the Codex mapping gives the path to read a leaf by. `figure-it-out` and `typescript-best-practices` name principle leaves, so they now carry the Codex, GitHub Copilot, and Antigravity mapping preambles. Skill text from upstream does not change in this release.
